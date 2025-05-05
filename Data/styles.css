@@ -1,0 +1,238 @@
+:root{
+    --azulclaro:  #4ee4e9;
+    --azul: #00c3ff;
+    --grisclaro : #9b9fb5; 
+    --grisobscuro: #383737;
+    --azulobscuro: #2865af;
+    --verdeclaro: #5cf82c;  
+    --verdeobscuro: #0b4d05;
+    --negronotannegro: #060220;
+    --negronotannegro2:#1403fc;
+    --naranja: #ff8800;
+    --rojo:#ff0000;
+    --blanco: #fff;
+    --negro: #000;
+    --fuentePrincipal: "Winky+Sans",cursive 
+}
+html {
+    box-sizing: border-box;
+    font-size: 62.5%;
+    font-family: var(--fuentePrincipal);
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    font-family: var(--fuentePrincipal);
+    font-size: 1.6rem;
+    background-image: linear-gradient(to top, var(--negronotannegro2) 0%, var(--negronotannegro) 100%);
+    color: var(--blanco);
+}
+
+
+ 
+
+
+h1,h2,h3{
+    text-align:center;
+    color:var(--blanco);
+    font-family:var(--fuentePrincipal);
+
+}
+
+.linea {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 6px;               /* Grosor de la línea */
+    z-index: 9999;
+}
+
+.linea--izq1 {
+    left: 0;
+    background: linear-gradient(to bottom, #00f, #0ff); /* Azul a celeste */
+}
+.linea--izq2 {
+    left: 10px; /* separación entre líneas izquierdas */
+    background: linear-gradient(to bottom, #0ff, #00f); /* Celeste a azul */
+}
+
+.linea--der1 {
+    right: 0;
+    background: linear-gradient(to bottom, #f00, #ff0); /* Rojo a amarillo */
+}
+.linea--der2 {
+    right: 10px; /* separación entre líneas derechas */
+    background: linear-gradient(to bottom, #ff0, #f00); /* Amarillo a rojo */
+}
+
+ 
+ 
+/*.tab-container {
+     display: flex; 
+     border-bottom: 2px solid;
+     background-color: var(--rojo); 
+    }
+.tab { 
+    padding: 10px 20px; cursor: pointer; 
+    border: 1px solid var(--blanco);
+    background-color: var(--azulclaro); 
+}
+.tab.active { 
+    background-color: var(--azulobscuro); 
+    font-weight: bold;
+ }*/
+
+ .tab-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    background-color: var(--rojo);
+    border-bottom: 4px solid var(--azulobscuro); /* línea inferior visible */
+    margin: 0;
+    padding: 0;
+  }
+  
+  .tab {
+    flex: 1; /* Ocupa mismo ancho cada pestaña */
+    text-align: center;
+    padding: 1.2rem 0;
+    cursor: pointer;
+    background-color: var(--azulclaro);
+    border-left: 2px solid var(--blanco);
+    border-right: 2px solid var(--blanco);
+    border-top: 4px solid var(--verdeobscuro);
+    border-bottom: none;
+    font-weight: 600;
+    color: var(--negro);
+    font-family: var(--fuentePrincipal);
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+  }
+  
+  /* Elimina espacio entre pestañas */
+  .tab + .tab {
+    margin-left: -2px;
+  }
+  
+  .tab.active {
+    background-color: var(--azulobscuro);
+    color: var(--blanco);
+    border-top: 4px solid var(--naranja); /* color distinto en activa */
+    border-left: 2px solid var(--blanco);
+    border-right: 2px solid var(--blanco);
+  }
+  
+
+.tab-content {
+     display: none; 
+     padding: 20px; 
+     border: 1px solid var(--naranja); 
+    }
+.tab-content.active { 
+    display: block; 
+}
+form { 
+    margin-bottom: 20px; 
+    padding: 10px; 
+    border: 1px solid var(--naranja); 
+}
+.contador { 
+    color: #fffefe; margin-top: 10px; 
+}
+.status-box { 
+    padding: 15px; 
+    margin: 20px; 
+    border: 2px solid var(--azulobscuro); 
+    background-color: var(--azul);
+ }
+.parameter-container { 
+    margin-top: 20px; 
+}
+
+.formulario__submit{
+    background-color: var(--griscla);
+    border: none;
+    font-size: 2rem;
+    font-family: var(--funtePrincipal);
+    padding: 2rem;
+    transition: background-color .3s ease;
+    transition: font-size .3s ease;
+    grid-column:1 /3 ;
+}
+.formulario__submit:hover {
+    font-size: 2.4rem;
+    cursor: pointer;
+    background-color: var(--gris);
+}
+
+/*.container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    align-items: flex-start;
+  }*/
+ 
+  /* 🔹 Reduce el tamaño general del texto */
+body {
+    font-size: 1.4rem;
+    padding: 10px;
+    margin: 0;
+  }
+  
+  /* 🔹 Compacta títulos y secciones */
+  h1, h2, h3, h4 {
+    margin: 5px 0;
+    font-size: 1.8rem;
+  }
+  
+  /* 🔹 Reduce espaciado entre formularios */
+  form {
+    margin-bottom: 8px;
+  }
+  
+  /* 🔹 Ajusta controles, inputs y botones */
+  label, input, button, select {
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+  }
+
+  .container {
+    display: flex;
+    height: 100vh;         /* Altura total de la ventana */
+    margin: 0;
+    padding: 0;
+  }
+  
+  .controls {
+    width: 50%;            /* Mitad izquierda */
+    height: 100vh;
+    overflow-y: auto;      /* Scroll vertical solo aquí */
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .image-container {
+    width: 50%;            /* Mitad derecha */
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .image-container img {
+    max-width: 70%;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 15px;
+  }
+  
+  

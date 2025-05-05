@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximun-scale=1.0">
+    <title>Control Servos</title>
+    <link rel="stylesheet" href="normalize.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&family=Winky+Sans:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+  </head>
+  <body>
+
+    <div class="container">
+        <div class="controls">
+    
+
+    <h1>Control de Servos</h1>
+    <div class="status-box">
+      <h3>Estado de Ejecución: <span id="estado-ejecucion">Listo</span></h3>
+      <p>Paso actual: <span id="paso-actual">0</span></p>
+    </div>
+    <div class="tab-container">
+      <div class="tab active" onclick="openTab(event, 'pestana1')">Servo 1</div>
+      <div class="tab" onclick="openTab(event, 'pestana2')">Servo 2</div>
+      <div class="tab" onclick="openTab(event, 'pestana3')">Servo 3</div>
+      <div class="tab" onclick="openTab(event, 'pestana4')">Servo 4</div>
+      <div class="tab" onclick="openTab(event, 'pestana5')">Configuración</div>
+    </div>
+    <div id='pestana1' class='tab-content' style='display:block'>
+      <h2>Servo 1</h2>
+      <h3>Movimiento Inmediato</h3>
+      <form id="servo1-form">
+        <label>Posición (0-360° o 0-4095):</label><br>
+        <input type='number' name='value' min='0' max='4095' required><br>
+        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <button class="button" id="mov1" onclick="submitForm(1)">Mover</button>
+      </form>
+      <h3>Configuración Trayectoria</h3>
+      <form id="trayectoria1-form">
+        <label>Posición:</label><br>
+        <input type='number' name='position' required><br>
+        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <button class="button"  id="add1" onclick="addPoint(1)">Punto Agregado</button>
+      </form>
+      <div class="parameter-container">
+        <h3>Parámetros de Movimiento</h3>
+        <form id="motion-parameters1-form">
+          <h4>Parámetros PID</h4>
+          <label>P: <input type='number' name='p' value='120' min='0' max='32767' required></label><br>
+          <label>I: <input type='number' name='i' value='15' min='0' max='32767' required></label><br>
+          <label>D: <input type='number' name='d' value='1' min='0' max='32767' required></label><br>
+          <h4>Movimiento</h4>
+          <label>Velocidad: <input type='number' name='v' value='100' min='0' max='1023' required></label><br>
+          <label>Aceleración: <input type='number' name='a' value='50' min='0' max='1023' required></label><br>
+          <button class="button" id="paratM1" onclick="submitTrayectoria(1)">Cambiar Parámetros</button>
+        </form>
+      </div>
+      <div class='contador'>Puntos almacenados: 0/10</div>
+    </div>
+    <div id='pestana2' class='tab-content'>
+      <h2>Servo 2</h2>
+      <h3>Movimiento Inmediato</h3>
+      <form id="servo2-form">
+        <label>Posición (0-360° o 0-4095):</label><br>
+        <input type='number' name='value' min='0' max='4095' required><br>
+        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <button class="button" id="mov2" onclick="submitForm(2)">Mover</button>
+      </form>
+      <h3>Configuración Trayectoria</h3>
+      <form id="trayectoria2-form">
+        <label>Posición:</label><br>
+        <input type='number' name='position' required><br>
+        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <button class="button" id="add2" onclick="addPoint(2)">Punto Agregado</button>
+      </form>
+      <div class="parameter-container">
+        <h3>Parámetros de Movimiento</h3>
+        <form id="motion-parameters2-form">
+          <h4>Parámetros PID</h4>
+          <label>P: <input type='number' name='p' value='120' min='0' max='32767' required></label><br>
+          <label>I: <input type='number' name='i' value='15' min='0' max='32767' required></label><br>
+          <label>D: <input type='number' name='d' value='1' min='0' max='32767' required></label><br>
+          <h4>Movimiento</h4>
+          <label>Velocidad: <input type='number' name='v' value='100' min='0' max='1023' required></label><br>
+          <label>Aceleración: <input type='number' name='a' value='50' min='0' max='1023' required></label><br>
+          <button class="button" id="paratM2" onclick="submitTrayectoria(2)">Cambiar Parámetros</button>
+        </form>
+      </div>
+      <div class='contador'>Puntos almacenados: 0/10</div>
+    </div>
+    <div id='pestana3' class='tab-content'>
+      <h2>Servo 3</h2>
+      <h3>Movimiento Inmediato</h3>
+      <form id="servo3-form">
+        <label>Posición (0-300° o 0-1023):</label><br>
+        <input type='number' name='value' min='0' max='1023' required><br>
+        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <button class="button" id="mov3" onclick="submitForm(3)">Mover</button>
+      </form>
+      <h3>Configuración Trayectoria</h3>
+      <form id="trayectoria3-form">
+        <label>Posición:</label><br>
+        <input type='number' name='position' required><br>
+        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <button class="button" id="add3" onclick="addPoint(3)">Punto Agregado</button>
+      </form>
+      <div class="parameter-container">
+        <h3>Parámetros de Movimiento</h3>
+        <form id="motion-parameters3-form">
+          <h4>Parámetros PID</h4>
+          <label>P: <input type='number' name='p' value='120' min='0' max='32767' required></label><br>
+          <label>I: <input type='number' name='i' value='15' min='0' max='32767' required></label><br>
+          <label>D: <input type='number' name='d' value='1' min='0' max='32767' required></label><br>
+          <h4>Movimiento</h4>
+          <label>Velocidad: <input type='number' name='v' value='100' min='0' max='1023' required></label><br>
+          <label>Aceleración: <input type='number' name='a' value='50' min='0' max='1023' required></label><br>
+          <button class="button" id="paratm3" onclick="submitTrayectoria(3)">Cambiar Parámetros</button>
+        </form>
+      </div>
+      <div class='contador'>Puntos almacenados: 0/10</div>
+    
+    </div> 
+
+     <div id='pestana4' class='tab-content'>
+      <h2>Servo 4</h2>
+      <h3>Movimiento Inmediato</h3>
+      <form id="servo4-form">
+        <label>Posición (0-300° o 0-1023):</label><br>
+        <input type='number' name='value' min='0' max='1023' required><br>
+        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <button class="button" id="mov4" onclick="submitForm(4)">Mover</button>
+      </form> 
+      <h3>Configuración Trayectoria</h3>
+      <form id="trayectoria4-form">
+        <label>Posición:</label><br>
+        <input type='number' name='position' required><br>
+        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <button class="button" id="mov4" onclick="addPoint(4)">Punto Agregado</button>
+      </form>
+      <div class='contador'>Puntos almacenados: 0/10</div>
+    </div>
+
+<div id='pestana5' class="tab-content">
+    <h2>Configuracion</h2>
+
+    <div class='contador'>Puntos almacenados: 0/10 </div>
+</div>
+
+
+    <div style="margin:20px; padding:10px; border:1px solid #555;">
+      <button type="button" onclick="executeSequence()">Ejecutar Secuencia Alternada</button>
+    </div>
+
+
+
+
+
+
+
+<!--
+    <script>
+      function openTab(evt, tabName) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.getElementById(tabName).style.display = 'block';
+        evt.currentTarget.classList.add('active');
+      }
+      function submitForm(servo) {
+        alert('Movimiento enviado al Servo ' + servo);
+      }
+      function submitTrayectoria(servo) {
+        alert('Parámetros cambiados para el Servo ' + servo);
+      }
+      function addPoint(servo) {
+        alert('Punto agregado para el Servo ' + servo);
+      }
+      function executeSequence() {
+        alert('Ejecutando secuencia alternada...');
+      }
+      setInterval(() => {
+        const status = "Listo";
+        const step = 0;
+        document.getElementById('estado-ejecucion').textContent = status;
+        document.getElementById('paso-actual').textContent = step;
+      }, 1000);
+    </script>
+    
+-->
+
+
+
+    <footer class="footer">
+        <p class="footer__texto">Todos los derechos reservados Poblano y VIP</p>
+    </footer> 
+    <div class="linea linea--izq1"></div>
+<div class="linea linea--izq2"></div>
+<div class="linea linea--der1"></div>
+<div class="linea linea--der2"></div>
+
+
+</div>
+<div class="image-container">
+  <img id= "imagen-fija" src="fija.png" alt="Imagen fija"> <!--imagen fija-->
+
+  <img id="imagen-dinamica" src="servo1.jpeg" alt="Imagen Dinámica" style="margin-top: 20px;">
+</div>
+
+
+
+
+</div>
+</body>
+
+</html>
