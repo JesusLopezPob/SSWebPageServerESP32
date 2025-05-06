@@ -26,18 +26,17 @@ if (!!window.EventSource) {
       document.getElementById("pwmSlider").value = obj.CT;
     }, false);
   
-    source.addEventListener('move', function(e) {
-      console.log("Mover Servo", e.data);
-      var obj = JSON.parse(e.data);
-      document.getElementById("iPot").innerHTML = obj.Pot;
-      document.getElementById("iLDR").innerHTML = obj.LDR;
-      document.getElementById("iCT").innerHTML = obj.CT;
-      document.getElementById("led_sta").innerHTML = obj.led_sta;
-      document.getElementById("pwmSlider").value = obj.CT;
-    }, false);
+    for (let i = 1; i <= 4; i++) {
+      source.addEventListener(`servo${i}`, function(e) {
+        console.log(`Movimiento en Servo ${i}:`, obj);
+        var obj = JSON.parse(e.data);
+        document.getElementById(`status_servo${i}`).innerText = `Posición: ${obj.value}`;
+      }, false);
+    }
   
   
   }
+  
   
   // Envío por presión del botón
   function toggleBoton(element){
@@ -56,6 +55,7 @@ if (!!window.EventSource) {
     xhr.open("GET", "/slider?value="+sliderValue, true);
     xhr.send();
   }
+    
   
   // Función para abrir las pestañas
   function openTab(evt, tabName) {
@@ -92,48 +92,72 @@ if (!!window.EventSource) {
 
 
 
-  // Funciones para manejar los formularios
+  // Funciones para manejar los botones de confirmacion
+
+
   function submitForm(servo) {
-    const activeTab = document.querySelector('.tab-content:not([style*="display: none"])');
-    const valueInput = activeTab.querySelector("input[name='value']");
-    const type = activeTab.querySelector("input[name='type']:checked").value;
+    const form = document.getElementById(`servo${servo}-form`);
+    const valueInput = form.querySelector("input[name='value']");
+    const typeInput = form.querySelector("input[name='type']:checked");
+  
     const value = valueInput.value.trim();
+    const type = typeInput.value;
   
     if (value === "" || isNaN(value)) {
-      alert("⚠️ Por favor, ingresa un número válido en el campo de valor.");
+      alert("⚠️ Ingresa un número válido.");
       valueInput.focus();
       return;
     }
+  
+    // Enviar al ESP32 vía GET sin recargar
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/move?servo=${servo}&type=${type}&value=${value}`, true);
+    xhr.send();
   
     alert('✅ Movimiento enviado al Servo ' + servo + ' con ' + value + ' ' + type);
+    console.log(`✅ Movimiento enviado al Servo ${servo}: ${value} (${type})`);
+    // Si quieres mostrar feedback visual:
+    document.getElementById(`status_servo${servo}`).innerText = `Enviado: ${value} ${type}`;
+
   }
   
-  function submitTrayectoria(servo) {
-    alert('Parámetros cambiados para el Servo ' + servo);
-  }
-  
+
+
+    
+
   function addPoint(servo) {
+    // Detecta la pestaña visible
     const activeTab = document.querySelector('.tab-content:not([style*="display: none"])');
     const valueInput = activeTab.querySelector("input[name='position']");
-    const type = activeTab.querySelector("input[name='type']:checked").value;
+    const typeInput = activeTab.querySelector("input[name='type']:checked");
+  
     const value = valueInput.value.trim();
+    const type = typeInput.value;
   
     if (value === "" || isNaN(value)) {
-      alert("⚠️ Por favor, ingresa un número válido en el campo de valor.");
+      alert("⚠️ Por favor, ingresa un número válido.");
       valueInput.focus();
       return;
     }
-      alert(' ✅ Punto agregado para el Servo ' + servo + ' con ' + value + ' ' + type);
-       
+  
+    // Enviar punto al servidor
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/addpoint?servo=${servo}&type=${type}&value=${value}`, true);
+    xhr.send();
+  
+    alert(' ✅ Punto agregado para el Servo ' + servo + ' con ' + value + ' ' + type);
+
+    console.log(`🟢 Punto agregado → Servo ${servo} | ${value} ${type}`);
+    document.getElementById(`status_servo${servo}`).innerText = `Punto: ${value} ${type}`;
   }
   
-  function addPoint(servo) {
-    alert('Punto agregado para el Servo ' + servo);
-  }
+
   
   function executeSequence() {
     alert('Ejecutando secuencia alternada...');
   }
+  
+
   
   // Actualizar estado cada segundo
   setInterval(() => {
