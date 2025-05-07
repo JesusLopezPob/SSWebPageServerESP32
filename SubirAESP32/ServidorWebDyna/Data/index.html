@@ -44,8 +44,8 @@
       <form id="trayectoria1-form">
         <label>Posición:</label><br>
         <input type='number' name='position' required><br>
-        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
-        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <input type='radio' name='Type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='Type' value='angle'> Ángulo<br>
         <button type="button" class="button"  id="add1" onclick="addPoint(1)">Punto Agregado</button>
       </form>
       <div class="parameter-container">
@@ -58,9 +58,10 @@
           <h4>Movimiento</h4>
           <label>Velocidad: <input type='number' name='v' value='100' min='0' max='1023' required></label><br>
           <label>Aceleración: <input type='number' name='a' value='50' min='0' max='1023' required></label><br>
-          <button type="button" class="button" id="paratM1" onclick="submitTrayectoria(1)">Cambiar Parámetros</button>
+          <button type="button"  class="button"   id="paratM1" onclick="submitMoveParame(1)">Cambiar Parámetros</button>
         </form>
-      </div>
+
+              </div>
       <div class='contador'>Puntos almacenados: 0/10</div>
     </div>
     <div id='pestana2' class='tab-content'>
@@ -77,8 +78,8 @@
       <form id="trayectoria2-form">
         <label>Posición:</label><br>
         <input type='number' name='position' required><br>
-        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
-        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <input type='radio' name='Type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='Type' value='angle'> Ángulo<br>
         <button type="button" class="button" id="add2" onclick="addPoint(2)">Punto Agregado</button>
       </form>
       <div class="parameter-container">
@@ -91,7 +92,7 @@
           <h4>Movimiento</h4>
           <label>Velocidad: <input type='number' name='v' value='100' min='0' max='1023' required></label><br>
           <label>Aceleración: <input type='number' name='a' value='50' min='0' max='1023' required></label><br>
-          <button type="button" class="button" id="paratM2" onclick="submitTrayectoria(2)">Cambiar Parámetros</button>
+          <button type="button" class="button" id="paratM2" onclick="submitMoveParame(2)">Cambiar Parámetros</button>
         </form>
       </div>
       <div class='contador'>Puntos almacenados: 0/10</div>
@@ -110,8 +111,8 @@
       <form id="trayectoria3-form">
         <label>Posición:</label><br>
         <input type='number' name='position' required><br>
-        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
-        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <input type='radio' name='Type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='Type' value='angle'> Ángulo<br>
         <button type="button" class="button" id="add3" onclick="addPoint(3)">Punto Agregado</button>
       </form>
       <div class="parameter-container">
@@ -124,7 +125,7 @@
           <h4>Movimiento</h4>
           <label>Velocidad: <input type='number' name='v' value='100' min='0' max='1023' required></label><br>
           <label>Aceleración: <input type='number' name='a' value='50' min='0' max='1023' required></label><br>
-          <button type="button" class="button" id="paratm3" onclick="submitTrayectoria(3)">Cambiar Parámetros</button>
+          <button type="button" class="button" id="paratm3" onclick="submitMoveParame(3)">Cambiar Parámetros</button>
         </form>
       </div>
       <div class='contador'>Puntos almacenados: 0/10</div>
@@ -145,8 +146,8 @@
       <form id="trayectoria4-form">
         <label>Posición:</label><br>
         <input type='number' name='position' required><br>
-        <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
-        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <input type='radio' name='Type' value='unit' checked> Unidad Interna<br>
+        <input type='radio' name='Type' value='angle'> Ángulo<br>
         <button type="button" class="button" id="mov4" onclick="addPoint(4)">Punto Agregado</button>
       </form>
       <div class='contador'>Puntos almacenados: 0/10</div>

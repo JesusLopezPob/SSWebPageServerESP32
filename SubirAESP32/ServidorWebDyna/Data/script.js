@@ -16,15 +16,6 @@ if (!!window.EventSource) {
       }
     }, false);
   
-    source.addEventListener('perro_salchicha', function(e) {
-      console.log("perro_salchicha", e.data);
-      var obj = JSON.parse(e.data);
-      document.getElementById("iPot").innerHTML = obj.Pot;
-      document.getElementById("iLDR").innerHTML = obj.LDR;
-      document.getElementById("iCT").innerHTML = obj.CT;
-      document.getElementById("led_sta").innerHTML = obj.led_sta;
-      document.getElementById("pwmSlider").value = obj.CT;
-    }, false);
   
     for (let i = 1; i <= 4; i++) {
       source.addEventListener(`servo${i}`, function(e) {
@@ -33,7 +24,22 @@ if (!!window.EventSource) {
         document.getElementById(`status_servo${i}`).innerText = `Posición: ${obj.value}`;
       }, false);
     }
+
+    for (let i = 1; i <= 4; i++) {
+      source.addEventListener(`pointAdd${i}`, function(e) {
+        console.log(`Punto agregado a servo  ${i}:`, obj);
+        var obj = JSON.parse(e.data);
+        document.getElementById(`status_servo${i}`).innerText = `Posición: ${obj.value}`;
+      }, false);
+    }
   
+    for (let i = 1; i <= 3; i++) {
+      source.addEventListener(`MoveParam${i}`, function(e) {
+        console.log(`Parametros cambiados  al servo  ${i}:`, obj);
+        var obj = JSON.parse(e.data);
+        document.getElementById(`status_servo${i}`).innerText = `Posición: ${obj.value}`;
+      }, false);
+    }    
   
   }
   
@@ -117,7 +123,7 @@ if (!!window.EventSource) {
     alert('✅ Movimiento enviado al Servo ' + servo + ' con ' + value + ' ' + type);
     console.log(`✅ Movimiento enviado al Servo ${servo}: ${value} (${type})`);
     // Si quieres mostrar feedback visual:
-    document.getElementById(`status_servo${servo}`).innerText = `Enviado: ${value} ${type}`;
+    //document.getElementById(`status_servo${servo}`).innerText = `Enviado: ${value} ${type}`;
 
   }
   
@@ -129,7 +135,7 @@ if (!!window.EventSource) {
     // Detecta la pestaña visible
     const activeTab = document.querySelector('.tab-content:not([style*="display: none"])');
     const valueInput = activeTab.querySelector("input[name='position']");
-    const typeInput = activeTab.querySelector("input[name='type']:checked");
+    const typeInput = activeTab.querySelector("input[name='Type']:checked");
   
     const value = valueInput.value.trim();
     const type = typeInput.value;
@@ -148,10 +154,36 @@ if (!!window.EventSource) {
     alert(' ✅ Punto agregado para el Servo ' + servo + ' con ' + value + ' ' + type);
 
     console.log(`🟢 Punto agregado → Servo ${servo} | ${value} ${type}`);
-    document.getElementById(`status_servo${servo}`).innerText = `Punto: ${value} ${type}`;
+    
+    //document.getElementById(`status_servo${servo}`).innerText = `Punto: ${value} ${type}`;
   }
   
+ function submitMoveParame(servo){
+     // Detecta la pestaña visible
+     const activeTab = document.querySelector('.tab-content:not([style*="display: none"])');
+     const valueInputP = activeTab.querySelector("input[name='p']"); 
+     const valueInputI = activeTab.querySelector("input[name='i']"); 
+     const valueInputD = activeTab.querySelector("input[name='d']"); 
 
+     const valueInputV = activeTab.querySelector("input[name='v']"); 
+     const valueInputA = activeTab.querySelector("input[name='a']");      
+
+
+     const valueP = valueInputP.value.trim(); 
+     const valueI = valueInputI.value.trim(); 
+     const valueD = valueInputD.value.trim(); 
+
+     const valueV = valueInputV.value.trim(); 
+     const valueA = valueInputA.value.trim(); 
+
+         // Enviar al ESP32 vía GET sin recargar
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/moveParamet?servo=${servo}&p=${valueP}&i=${valueI}&d=${valueD}&v=${valueV}&a=${valueA}`, true);
+    xhr.send();
+
+    alert(' ✅ Parametros cambiados al servo ' + servo + ' con  P:' + valueP + ' I:' + valueI + ' D:' + valueD + ' V:' + valueV + ' A:' + valueA);
+
+ }
   
   function executeSequence() {
     alert('Ejecutando secuencia alternada...');

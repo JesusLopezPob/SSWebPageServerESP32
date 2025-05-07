@@ -10,52 +10,53 @@ void server_init(){
      //Dirección SPIFFS
      server.serveStatic("/", SPIFFS, "/");
 
-     //Presionar un botón
-     server.on("/nuevo", HTTP_GET, [](AsyncWebServerRequest *request){
-          request->send(200, "text/plain", "OK");
-          events.send(crearJson().c_str(),"perro_salchicha",millis());
-     });
-     
-     //Presionar un botón
-     server.on("/bot1", HTTP_GET, [](AsyncWebServerRequest *request){
-          led_sta = !led_sta; request->send(200, "text/plain", "OK");
-          Serial.println("← Botón presionado, nuevo estado = " + 
-                    String(led_sta));
-     });
-     
 
+// Manejador del endpoint /move
+server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
+    String servo = request->getParam("servo")->value();  // Parámetro de la solicitud
+    String type  = request->getParam("type")->value();
+    String value = request->getParam("value")->value();
 
+    Serial.printf("Moviendo el  Servo %s: %s %s\n", servo.c_str(), value.c_str(), type.c_str());
+  
+    // Enviar feedback por SSE (usando la función correcta con los parámetros)
+    events.send(moveServo(servo, type, value).c_str(), ("servo" + servo).c_str(), millis());
+  
+    request->send(200, "text/plain", "OK");  // Enviar respuesta
+});
 
-     //mandar comando mover instantaneo del servo
-     server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
-          String servo = request->getParam("servo")->value();
-          String type  = request->getParam("type")->value();
-          String value = request->getParam("value")->value();
-          
-          // Aquí puedes usar esas variables para mover el servo correspondiente
-          
-          // Enviar feedback por SSE
-          JSONVar j;
-          j["servo"] = servo;
-          j["type"] = type;
-          j["value"] = value;
-          events.send(JSON.stringify(j).c_str(), "servo" + servo, millis());
-          
-          request->send(200, "text/plain", "OK");
-          });
+ //mandar comando agregar punto al servo         
+ server.on("/addpoint", HTTP_GET, [](AsyncWebServerRequest *request){
+      String servo = request->getParam("servo")->value();
+      String type  = request->getParam("Type")->value();
+      String value = request->getParam("value")->value();
+      
+      Serial.printf("Punto agregado al Servo %s: %s %s\n", servo.c_str(), value.c_str(), type.c_str());
+      
+      //agregar funcion de mover el servomotor
 
+      events.send(addPoint(servo, type, value).c_str(), ("pointAdd" + servo).c_str(), millis());
+      // Aquí podrías guardar el punto en una lista o usarlo como parte de una trayectoria
+      request->send(200, "text/plain", "OK");
+ });
 
-      //mandar comando agregar punto al servo         
-     server.on("/addpoint", HTTP_GET, [](AsyncWebServerRequest *request){
-          String servo = request->getParam("servo")->value();
-          String type  = request->getParam("type")->value();
-          String value = request->getParam("value")->value();
-          
-          Serial.printf("Punto agregado al Servo %s: %s %s\n", servo.c_str(), value.c_str(), type.c_str());
-          
-          // Aquí podrías guardar el punto en una lista o usarlo como parte de una trayectoria
-          request->send(200, "text/plain", "OK");
-     });
+  //mandar parametros nuevos de mov al servo         
+ server.on("/moveParamet", HTTP_GET, [](AsyncWebServerRequest *request){
+      String servo = request->getParam("servo")->value();
+      String P  = request->getParam("p")->value();
+      String I = request->getParam("i")->value();
+      String D  = request->getParam("d")->value();
+      String V = request->getParam("v")->value();
+      String A = request->getParam("a")->value();
+      
+      
+      Serial.printf("Parametro modificados al Servo %s: P: %s I: %s D: %s V: %s A: %s \n", servo.c_str(), P.c_str(), I.c_str(), D.c_str(), V.c_str(), A.c_str());
+//agregar funcion de mover el servomotor
+
+      events.send(changeMoveParamet(servo, P,I,D,V,A).c_str(), ("pointAdd" + servo).c_str(), millis());
+      // Aquí podrías guardar el punto en una lista o usarlo como parte de una trayectoria
+      request->send(200, "text/plain", "OK");
+ });
         
 
 

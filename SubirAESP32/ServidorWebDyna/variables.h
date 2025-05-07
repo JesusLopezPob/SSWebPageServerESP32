@@ -1,3 +1,7 @@
+//WiFi
+#define ssid "ESP32-AP"
+#define pass "123456789"
+
 //Tiempo
 uint32_t t_anterior = 0;
 uint32_t t_sensado = 1000;
@@ -30,7 +34,7 @@ const int MAX_ANGLE_2 = 360;
 // config Servo 4 Protocolo 1.0
 const float PROTOCOL_VERSION_1 = 1.0;
 
-
+/*
 //============ AX18 ====================================//
 
 // Direcciones para Protocolo 1.0 AX-18
@@ -79,6 +83,8 @@ const int MAX_ANGLE_1 = 300;
 #define PRESENT_POSITION_ADDR      132
 #define PRESENT_POSITION_ADDR_LEN  4
 
+*/
+
 // Configuración Servo 1 
 uint16_t MX_speed = 50;
 /*
@@ -86,8 +92,3 @@ uint16_t MX_CW_limit = 300;
 uint16_t MX_CCW_limit = 500;
 
 */
-
-
-
-
-
