@@ -26,16 +26,21 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
 });
 
  //mandar comando agregar punto al servo         
- server.on("/addpoint", HTTP_GET, [](AsyncWebServerRequest *request){
-      String servo = request->getParam("servo")->value();
-      String type  = request->getParam("Type")->value();
-      String value = request->getParam("value")->value();
+ server.on("/addPoint", HTTP_GET, [](AsyncWebServerRequest *request){
+      /*
+      String servo = request->getParam("servo")->value();      
+      String Type  = request->getParam("Type")->value();
+      String pos = request->getParam("position")->value();
+*/
+      String servo = request->getParam("servo") ? request->getParam("servo")->value() : "";
+      String Type  = request->getParam("type") ? request->getParam("type")->value() : "";
+      String pos = request->getParam("value") ? request->getParam("value")->value() : "";
       
-      Serial.printf("Punto agregado al Servo %s: %s %s\n", servo.c_str(), value.c_str(), type.c_str());
+      Serial.printf("Punto agregado al Servo %s: %s %s\n", servo.c_str(), pos.c_str(), Type.c_str());
       
       //agregar funcion de mover el servomotor
 
-      events.send(addPoint(servo, type, value).c_str(), ("pointAdd" + servo).c_str(), millis());
+      events.send(addPoint(servo, Type, pos).c_str(), ("pointAdd" + servo).c_str(), millis());
       // Aquí podrías guardar el punto en una lista o usarlo como parte de una trayectoria
       request->send(200, "text/plain", "OK");
  });
@@ -53,7 +58,7 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
       Serial.printf("Parametro modificados al Servo %s: P: %s I: %s D: %s V: %s A: %s \n", servo.c_str(), P.c_str(), I.c_str(), D.c_str(), V.c_str(), A.c_str());
 //agregar funcion de mover el servomotor
 
-      events.send(changeMoveParamet(servo, P,I,D,V,A).c_str(), ("pointAdd" + servo).c_str(), millis());
+      events.send(changeMoveParamet(servo, P,I,D,V,A).c_str(), ("MoveParam" + servo).c_str(), millis());
       // Aquí podrías guardar el punto en una lista o usarlo como parte de una trayectoria
       request->send(200, "text/plain", "OK");
  });

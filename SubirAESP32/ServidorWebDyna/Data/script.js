@@ -102,9 +102,9 @@ if (!!window.EventSource) {
 
 
   function submitForm(servo) {
-    const form = document.getElementById(`servo${servo}-form`);
-    const valueInput = form.querySelector("input[name='value']");
-    const typeInput = form.querySelector("input[name='type']:checked");
+    const activeTab = document.querySelector('.tab-content:not([style*="display: none"])');
+    const valueInput = activeTab.querySelector("input[name='value']");
+    const typeInput = activeTab.querySelector("input[name='type']:checked");
   
     const value = valueInput.value.trim();
     const type = typeInput.value;
@@ -137,10 +137,10 @@ if (!!window.EventSource) {
     const valueInput = activeTab.querySelector("input[name='position']");
     const typeInput = activeTab.querySelector("input[name='Type']:checked");
   
-    const value = valueInput.value.trim();
-    const type = typeInput.value;
+    const pos = valueInput.value.trim();
+    const Type = typeInput.value;
   
-    if (value === "" || isNaN(value)) {
+    if (pos === "" || isNaN(pos)) {
       alert("⚠️ Por favor, ingresa un número válido.");
       valueInput.focus();
       return;
@@ -148,12 +148,12 @@ if (!!window.EventSource) {
   
     // Enviar punto al servidor
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", `/addpoint?servo=${servo}&type=${type}&value=${value}`, true);
+    xhr.open("GET", `/addPoint?servo=${servo}&type=${Type}&value=${pos}`, true);
     xhr.send();
   
-    alert(' ✅ Punto agregado para el Servo ' + servo + ' con ' + value + ' ' + type);
+    alert(' ✅ Punto agregado para el Servo ' + servo + ' con ' + pos + ' ' + Type);
 
-    console.log(`🟢 Punto agregado → Servo ${servo} | ${value} ${type}`);
+    console.log(`🟢 Punto agregado → Servo ${servo} | ${pos} ${Type}`);
     
     //document.getElementById(`status_servo${servo}`).innerText = `Punto: ${value} ${type}`;
   }
