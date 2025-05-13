@@ -47,11 +47,13 @@ String changeMoveParamet(String servo, String P, String I,String D, String V, St
     return jsonString;  // Retornar el string JSON    
 }
 
+String startSequence(){        
+    JDoc = JSONVar();  // Limpiar el contenido de JDoc 
+        // Asignación de los valores a los campos JSON
+    JDoc["start"] = "1";
 
-/*
-String JsonStart(){                       //iniciar la secuencia guardada
-    JDoc = JSONVar();  // Limpiar el contenido de JDoc  
+     // Convertir el JSON a string
+    String jsonString = JSON.stringify(JDoc);
+    Serial.println("→ " + jsonString);  // Imprimir JSON en consola
+    return jsonString;  // Retornar el string JSON    
 }
-
-
-*/

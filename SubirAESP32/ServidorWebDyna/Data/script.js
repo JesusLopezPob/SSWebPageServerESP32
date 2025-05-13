@@ -39,7 +39,13 @@ if (!!window.EventSource) {
         var obj = JSON.parse(e.data);
         document.getElementById(`status_servo${i}`).innerText = `Posición: ${obj.value}`;
       }, false);
-    }    
+    }   
+    
+    source.addEventListener(`startSeq`, function(e) {
+      console.log(`Se inicia la secuencia:`, obj);
+      var obj = JSON.parse(e.data);
+      document.getElementById(`status_servo${i}`).innerText = `Posición: ${obj.value}`;
+    }, false);
   
   }
   
@@ -122,6 +128,7 @@ if (!!window.EventSource) {
   
     alert('✅ Movimiento enviado al Servo ' + servo + ' con ' + value + ' ' + type);
     console.log(`✅ Movimiento enviado al Servo ${servo}: ${value} (${type})`);
+    
     // Si quieres mostrar feedback visual:
     //document.getElementById(`status_servo${servo}`).innerText = `Enviado: ${value} ${type}`;
 
@@ -186,7 +193,14 @@ if (!!window.EventSource) {
  }
   
   function executeSequence() {
-    alert('Ejecutando secuencia alternada...');
+     // Enviar al ESP32 vía GET sin recargar
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/Start?`, true);
+    xhr.send();
+  
+    alert('✅ Ejecutando secuencia alternada...');
+    console.log(`✅ Ejecutando secuencia alternada...)`);
+    
   }
   
 

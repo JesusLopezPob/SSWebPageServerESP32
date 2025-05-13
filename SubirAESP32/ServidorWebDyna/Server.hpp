@@ -18,6 +18,10 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
     String value = request->getParam("value")->value();
 
     Serial.printf("Moviendo el  Servo %s: %s %s\n", servo.c_str(), value.c_str(), type.c_str());
+
+    
+      //agregar funcion de mover el servomotor
+
   
     // Enviar feedback por SSE (usando la función correcta con los parámetros)
     events.send(moveServo(servo, type, value).c_str(), ("servo" + servo).c_str(), millis());
@@ -38,7 +42,7 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
       
       Serial.printf("Punto agregado al Servo %s: %s %s\n", servo.c_str(), pos.c_str(), Type.c_str());
       
-      //agregar funcion de mover el servomotor
+      //agregar funcion de guardar punto
 
       events.send(addPoint(servo, Type, pos).c_str(), ("pointAdd" + servo).c_str(), millis());
       // Aquí podrías guardar el punto en una lista o usarlo como parte de una trayectoria
@@ -62,6 +66,20 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
       // Aquí podrías guardar el punto en una lista o usarlo como parte de una trayectoria
       request->send(200, "text/plain", "OK");
  });
+
+
+server.on("/Start", HTTP_GET, [](AsyncWebServerRequest *request){
+
+    Serial.printf(" Ejecutando secuencia alternada...\n");
+
+          //agregar funcion de inciiar la secuencia
+  
+    // Enviar feedback por SSE (usando la función correcta con los parámetros)
+    events.send(startSequence().c_str(), "startSeq" , millis());
+  
+    request->send(200, "text/plain", "OK");  // Enviar respuesta
+});
+ 
         
 
 

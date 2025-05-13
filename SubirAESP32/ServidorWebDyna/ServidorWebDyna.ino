@@ -14,6 +14,7 @@
 #include "variables.h"          //Manejo de variables y constantes
 #include "json.hpp"
 #include "server.hpp"
+#include "DxlConfig.hpp"
 
 
 void setup() {
@@ -25,11 +26,19 @@ void setup() {
   //inciar WIFI
   wifi_AP_init(ssid,pass);
   delay(1000);
-  //SPIFFS
+  
+  // Acceder al SPIFFS
   spiffs_init();
-    //Server
+
+   //configurar los servomotores
+  //configDXL();
+  
+  //incializar el Server
   server_init();
   delay(100);
+
+
+  
 
 }
 

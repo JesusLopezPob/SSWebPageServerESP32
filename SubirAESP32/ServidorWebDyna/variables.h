@@ -1,16 +1,23 @@
+// =========================
 //WiFi
+// =========================
 #define ssid "ESP32-AP"
 #define pass "123456789"
 
+
+// =========================
 //Tiempo
+// =========================
 uint32_t t_anterior = 0;
 uint32_t t_sensado = 1000;
+
 
 // =========================
 // Configuración Dynamixel
 // =========================
 
 //UART
+
 #define RX_PIN 16
 #define TX_PIN 17
 #define DXL_DIR_PIN 5
@@ -34,7 +41,7 @@ const int MAX_ANGLE_2 = 360;
 // config Servo 4 Protocolo 1.0
 const float PROTOCOL_VERSION_1 = 1.0;
 
-/*
+
 //============ AX18 ====================================//
 
 // Direcciones para Protocolo 1.0 AX-18
@@ -58,11 +65,20 @@ const float PROTOCOL_VERSION_1 = 1.0;
 // Configuración Servo 3
 uint16_t AX_CW_limit = 300;
 uint16_t AX_CCW_limit = 500;
-uint16_t AX_speed = 50;
+//uint16_t AX_speed = 50;
 
 const int MAX_UNIT_1 = 1023;
 const int MAX_ANGLE_1 = 300;
 
+// Constantes para torque
+const uint8_t TURN_ON  = 1;
+const uint8_t TURN_OFF = 0;
+
+// Tiempo de espera para las operaciones (ms)
+#define TIMEOUT 1000
+
+
+/*
 //============ MX106 ====================================//
 
 // Direcciones para Protocolo 2.0 MX-106
@@ -82,8 +98,8 @@ const int MAX_ANGLE_1 = 300;
 // Nueva definición para leer la posición actual en Protocolo 2.0 MX106
 #define PRESENT_POSITION_ADDR      132
 #define PRESENT_POSITION_ADDR_LEN  4
-
 */
+
 
 // Configuración Servo 1 
 uint16_t MX_speed = 50;
@@ -92,3 +108,34 @@ uint16_t MX_CW_limit = 300;
 uint16_t MX_CCW_limit = 500;
 
 */
+//variables para el escaneo
+
+
+
+//estructuras de datos
+
+struct Punto {
+    float valorPosicion;   // Valor de la posición (puede ser un número o ángulo)
+    String tipo;           // Tipo: "unit" o "angle"
+};
+
+struct ServoConfig {
+    int id;               // ID del servo
+    int baudrate;         // Baudrate
+    float protocolo;     // Protocolo de comunicación (por ejemplo, "1.0 o 2.0")
+    float P, I, D;        // Parámetros PID
+    int V, A;             // Velocidad y aceleración
+    Punto puntos[10];     // Array para almacenar hasta 10 puntos
+    int contadorPuntos;   // Número actual de puntos guardados
+};
+
+  ServoConfig servos[4];
+
+
+
+
+
+
+// =========================
+//Sensores Finales de carrera
+// =========================

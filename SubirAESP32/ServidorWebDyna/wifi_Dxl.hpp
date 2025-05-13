@@ -1,7 +1,4 @@
 //configuracion para la esp32 como AP
-
-  // Configura el ESP32 como punto de acceso
-
 void wifi_AP_init(const char* ssid, const char* pass) {
   for (int attempt = 0; attempt < 5; attempt++) {
     WiFi.softAP(ssid, pass);  // Configura el ESP32 como punto de acceso
