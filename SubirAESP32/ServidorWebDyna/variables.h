@@ -11,6 +11,8 @@
 uint32_t t_anterior = 0;
 uint32_t t_sensado = 1000;
 
+#define TIMEOUT 1000
+
 
 // =========================
 // Configuración Dynamixel
@@ -108,12 +110,25 @@ uint16_t MX_CW_limit = 300;
 uint16_t MX_CCW_limit = 500;
 
 */
+
+//============ Scan ====================================//
 //variables para el escaneo
+#define MAX_SERVOS 4
+int found_ids[MAX_SERVOS];
+int max_servos = MAX_SERVOS;
 
+struct ServoInfo {
+  int id;
+  int protocol;
+  int baudrate;
+  int model_number;
+};
 
+  ServoInfo scanDXL[4];
 
 //estructuras de datos
 
+//============ Servos  ====================================//
 struct Punto {
     float valorPosicion;   // Valor de la posición (puede ser un número o ángulo)
     String tipo;           // Tipo: "unit" o "angle"
@@ -131,7 +146,7 @@ struct ServoConfig {
 
   ServoConfig servos[4];
 
-
+//
 
 
 

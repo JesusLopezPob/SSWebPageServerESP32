@@ -18,13 +18,15 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
     String value = request->getParam("value")->value();
 
     Serial.printf("Moviendo el  Servo %s: %s %s\n", servo.c_str(), value.c_str(), type.c_str());
-
     
-      //agregar funcion de mover el servomotor
+    void moveDxl(int n, String type, int valuePos);
+    int n = servo.toInt() - 1;
+    int valuePos= value.toInt();
+     moveDxl(n,type,valuePos);
 
   
     // Enviar feedback por SSE (usando la función correcta con los parámetros)
-    events.send(moveServo(servo, type, value).c_str(), ("servo" + servo).c_str(), millis());
+    events.send(moveServoJSON(servo, type, value).c_str(), ("servo" + servo).c_str(), millis());
   
     request->send(200, "text/plain", "OK");  // Enviar respuesta
 });
@@ -43,8 +45,12 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
       Serial.printf("Punto agregado al Servo %s: %s %s\n", servo.c_str(), pos.c_str(), Type.c_str());
       
       //agregar funcion de guardar punto
+      void addPoint(int n, String type, int valuePos);
+      int n = servo.toInt() - 1;
+      int valuePos= pos.toInt();
+      addPoint(n,Type,valuePos);
 
-      events.send(addPoint(servo, Type, pos).c_str(), ("pointAdd" + servo).c_str(), millis());
+      events.send(addPointJSON(servo, Type, pos).c_str(), ("pointAdd" + servo).c_str(), millis());
       // Aquí podrías guardar el punto en una lista o usarlo como parte de una trayectoria
       request->send(200, "text/plain", "OK");
  });
@@ -79,7 +85,19 @@ server.on("/Start", HTTP_GET, [](AsyncWebServerRequest *request){
   
     request->send(200, "text/plain", "OK");  // Enviar respuesta
 });
- 
+
+
+server.on("/Scan", HTTP_GET, [](AsyncWebServerRequest *request){
+
+    Serial.printf(" Escaneando Servos...\n");
+    int scanServoDxl();  // prototipo
+    int countServos =scanServoDxl();
+  
+    // Enviar feedback por SSE (usando la función correcta con los parámetros)
+    events.send( scanResults(scanDXL, countServos).c_str(), "SCAN" , millis());
+  
+    request->send(200, "text/plain", "OK");  // Enviar respuesta
+});
         
 
 
