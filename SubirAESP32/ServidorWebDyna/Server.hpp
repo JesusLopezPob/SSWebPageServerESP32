@@ -68,7 +68,7 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
       Serial.printf("Parametro modificados al Servo %s: P: %s I: %s D: %s V: %s A: %s \n", servo.c_str(), P.c_str(), I.c_str(), D.c_str(), V.c_str(), A.c_str());
 //agregar funcion de mover el servomotor
 
-      events.send(changeMoveParamet(servo, P,I,D,V,A).c_str(), ("MoveParam" + servo).c_str(), millis());
+      events.send(changeMoveParametJSON(servo, P,I,D,V,A).c_str(), ("MoveParam" + servo).c_str(), millis());
       // Aquí podrías guardar el punto en una lista o usarlo como parte de una trayectoria
       request->send(200, "text/plain", "OK");
  });
@@ -79,9 +79,12 @@ server.on("/Start", HTTP_GET, [](AsyncWebServerRequest *request){
     Serial.printf(" Ejecutando secuencia alternada...\n");
 
           //agregar funcion de inciiar la secuencia
+   void executeSequence();
+   executeSequence();
+          
   
     // Enviar feedback por SSE (usando la función correcta con los parámetros)
-    events.send(startSequence().c_str(), "startSeq" , millis());
+    events.send(startSequenceJSON().c_str(), "startSeq" , millis());
   
     request->send(200, "text/plain", "OK");  // Enviar respuesta
 });
@@ -94,7 +97,7 @@ server.on("/Scan", HTTP_GET, [](AsyncWebServerRequest *request){
     int countServos =scanServoDxl();
   
     // Enviar feedback por SSE (usando la función correcta con los parámetros)
-    events.send( scanResults(scanDXL, countServos).c_str(), "SCAN" , millis());
+    events.send( scanResultsJSON(scanDXL, countServos).c_str(), "SCAN" , millis());
   
     request->send(200, "text/plain", "OK");  // Enviar respuesta
 });

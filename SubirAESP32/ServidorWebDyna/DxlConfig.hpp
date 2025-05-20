@@ -8,43 +8,77 @@ void configDXL(){
   DXL_SERIAL.begin(DXL_Baud, SERIAL_8N1, RX_PIN, TX_PIN);
   dxl.begin(DXL_Baud);
 
+  // eliminar la trayectoria y resetear el contadorPunto en caso de reseteo o alguna otra situacion
+  for (int i = 0; i < MAX_SERVOS; i++) {
+    servos[i].contadorPuntos=0;
+    for (int j=0; j<10;j++){
+      servos[i].puntos[j].valorPosicion=0.0;
+      servos[i].puntos[j].tipo.clear();
 
-    
-    for (int i = 0; i < 4; i++) {
-        // Definir los ID
-        servos[i].id = (i == 0) ? 4 : i; //  { 4, 1, 2, 3}
-
-        // Definir los baudrate
-        servos[i].baudrate = 1000000;
-
-        //definir los protocolos
-        servos[i].protocolo=(i < 3) ? 2.0 : 1.0; // { 2.0, 2.0, 2.0 , 1.0}
-
-        // Definir protocolos (protocolo ya está inicializado en el constructor)
-
-        // Definir PID
-        servos[i].P = (i < 3) ? 120 : -1;   //{ 120, 120, 120 , -1}
-        servos[i].I = (i < 3) ? 15 : -1;    // { 15, 15, 15 , -1}
-        servos[i].D = (i < 3) ? 1 : -1;     // { 1, 1, 1 , -1}
-
-        // Definir V y A
-        servos[i].V = (i < 3) ? 100 : 50;   // { 100, 100, 100 , 50}
-        servos[i].A = (i < 3) ? 50 : -1;    // { 50, 50, 50, -1}
-
-        servos[i].contadorPuntos = 0;
-
-        for (int j = 0; j < 10; j++) {
-            servos[i].puntos[j].valorPosicion = 0;
-            servos[i].puntos[j].tipo.clear();
-        }
     }
+  }
+
     
+  for (int i = 0; i < 4; i++) {
+      // Definir los ID
+      servos[i].id = (i == 0) ? 4 : i; //  { 4, 1, 2, 3}
+
+      // Definir los baudrate
+      servos[i].baudrate = 1000000;
+
+      //definir los protocolos
+      servos[i].protocolo = (i == 1 || i == 2) ? 2.0 : 1.0; // { 1.0, 2.0, 2.0 , 1.0}
+
+      // Definir protocolos (protocolo ya está inicializado en el constructor)
+
+      // Definir PID
+      servos[i].P = (i < 3) ? 120 : -1;   //{ 120, 120, 120 , -1}
+      servos[i].I = (i < 3) ? 15 : -1;    // { 15, 15, 15 , -1}
+      servos[i].D = (i < 3) ? 1 : -1;     // { 1, 1, 1 , -1}
+
+      // Definir V y A
+      servos[i].V = (i < 3) ? 100 : 50;   // { 100, 100, 100 , 50}
+      servos[i].A = (i < 3) ? 50 : -1;    // { 50, 50, 50, -1}
+
+      servos[i].contadorPuntos = 0;
+
+      for (int j = 0; j < 10; j++) {
+          servos[i].puntos[j].valorPosicion = 0;
+          servos[i].puntos[j].tipo.clear();
+      }
+  }
+  
   
   
   //config para MX106
+  dxl.setPortProtocolVersion(1.0f);
 
+  uint8_t id_Mx= servos[0].id;
+  dxl.ping(id_Mx);
+  dxl.torqueOff(id_Mx);
+  dxl.setOperatingMode(id_Mx, OP_POSITION);
+  dxl.writeControlTableItem(POSITION_P_GAIN, id_Mx, servos[id_Mx].P);
+  dxl.writeControlTableItem(POSITION_I_GAIN, id_Mx, servos[id_Mx].I);
+  dxl.writeControlTableItem(POSITION_D_GAIN, id_Mx, servos[id_Mx].D);
+
+    // Configurar velocidad
+    uint16_t speedMx = servos[0].V; 
+    
+    if (!dxl.write(id_Mx,MX_MOVING_SPEED_ADDR, (uint8_t*)&speedMx, MX_MOVING_SPEED_ADDR_LEN, TIMEOUT)) {
+      Serial.println("Error: No se pudo configurar la velocidad");
+      return;
+    }
+    
+    //dxl.writeControlTableItem(PROFILE_VELOCITY, id_Mx, servos[id_Mx].V);
+    Serial.println("Velocidad de movimiento configurada");
+      
+  dxl.torqueOn(id_Mx);
+  Serial.println("Servo MX " + String(id_Mx) + " configurado en posición (Protocolo 1.0).");
 
   //config para XM
+
+  dxl.setPortProtocolVersion(2.0f);
+
   for  (int i=1; i<=2;i++){
     uint8_t id = servos[i].id;
     dxl.ping(id);
@@ -176,90 +210,106 @@ void moveDxl(int index, String type, int valuePos) {
   int prot = servos[index].protocolo;  // Asumiendo que servos[] está definido globalmente
   int id = servos[index].id;  // ID del servo
 
-//si utiliza el protocolo 2.0
-  if (prot == 2) {
-    dxl.setPortProtocolVersion(2.0f);
-    dxl.ping(servos[index].id);
-    // Configuración adicional si se encuentra un Dynamixel
-    dxl.torqueOff(servos[index].id);
-    dxl.setOperatingMode(servos[index].id, OP_POSITION);
-    dxl.torqueOn(servos[index].id);
-    
-    if (type == "unit") {
-      dxl.setGoalPosition(id, valuePos); // Posición en formato raw
-    } else if (type == "angle") {
-      dxl.setGoalPosition(id, valuePos, UNIT_DEGREE); // Posición en grados
+
+  int currentPos = 0;
+  int tolerance = 5; // Ajusta según precisión deseada
+
+  //si utiliza el protocolo 2.0
+    if (prot == 2) {
+      dxl.setPortProtocolVersion(2.0f);
+      dxl.ping(servos[index].id);
+      // Configuración adicional si se encuentra un Dynamixel
+      dxl.torqueOff(servos[index].id);
+      dxl.setOperatingMode(servos[index].id, OP_POSITION);
+      dxl.torqueOn(servos[index].id);
+      
+      if (type == "unit") {
+        dxl.setGoalPosition(id, valuePos); // Posición en formato raw
+      } else if (type == "angle") {
+        dxl.setGoalPosition(id, valuePos, UNIT_DEGREE); // Posición en grados
+      }
     }
-  }
 
   //si es el AX18
-  if (index == 3) {  
-  
-    dxl.setPortProtocolVersion(1.0f);
-//==============================configuro para iniciar al AX18 ====================================// 
-
-   dxl.setPortProtocolVersion(1.0f);
-    if (dxl.ping(servos[index].id)) {
-      Serial.println("Dynamixel AX18A encontrado y listo.");
-  
-      // Apagar torque
-      if (!dxl.write(servos[index].id, AX_TORQUE_ENABLE_ADDR, (uint8_t*)&TURN_OFF, AX_TORQUE_ENABLE_ADDR_LEN, TIMEOUT)) {
-        Serial.println("Error: No se pudo apagar el torque");
-        return;
-      }
-      Serial.println("Torque apagado");
-  
-      // Configurar límites de ángulo
-      if (!dxl.write(servos[index].id, AX_CW_ANGLE_LIMIT_ADDR, (uint8_t*)&AX_CW_limit, AX_ANGLE_LIMIT_ADDR_LEN, TIMEOUT) ||
-          !dxl.write(servos[index].id, AX_CCW_ANGLE_LIMIT_ADDR, (uint8_t*)&AX_CCW_limit, AX_ANGLE_LIMIT_ADDR_LEN, TIMEOUT)) {
-        Serial.println("Error: No se pudo configurar el modo de operación");
-        return;
-      }
-      Serial.println("Modo de operación configurado");
-  
-      // Configurar velocidad
-      uint16_t speed = servos[index].V; 
-      if (!dxl.write(servos[index].id,AX_MOVING_SPEED_ADDR, (uint8_t*)&speed, AX_MOVING_SPEED_ADDR_LEN, TIMEOUT)) {
-        Serial.println("Error: No se pudo configurar la velocidad");
-        return;
-      }
-      Serial.println("Velocidad de movimiento configurada");
-  
-      // Activar torque
-      if (!dxl.write(servos[index].id, AX_TORQUE_ENABLE_ADDR, (uint8_t*)&TURN_ON, AX_TORQUE_ENABLE_ADDR_LEN, TIMEOUT)) {
-        Serial.println("Error: No se pudo activar el torque");
-        return;
-      }
-      Serial.println("Torque activado");
-  
-    } else {
-      Serial.println("Error: No se pudo encontrar el Dynamixel.");
-      return;
-    }
-//==============================fin de configuracion del AX18 ====================================// 
-  
-      if (type == "unit") {     
-        //dxl.write(servos[index].id, AX_GOAL_POSITION_ADDR, (uint8_t*)valuePos, AX_GOAL_POSITION_ADDR_LEN, TIMEOUT); // Posición en formato raw
-        dxl.setGoalPosition(servos[index].id, valuePos);
-    } else if (type == "angle") {
-      int raw_position = (int)(valuePos * 1023.0 / 300.0);
-      dxl.setGoalPosition(id, raw_position ); // Posición en grados convertidos
-    }
-
+    if (index == 3) {  
     
-  }
-  
-  
+      dxl.setPortProtocolVersion(1.0f);
+    //==============================configuro para iniciar al AX18 ====================================// 
+
+      dxl.setPortProtocolVersion(1.0f);
+        if (dxl.ping(servos[index].id)) {
+          Serial.println("Dynamixel AX18A encontrado y listo.");
+      
+          // Apagar torque
+          if (!dxl.write(servos[index].id, AX_TORQUE_ENABLE_ADDR, (uint8_t*)&TURN_OFF, AX_TORQUE_ENABLE_ADDR_LEN, TIMEOUT)) {
+            Serial.println("Error: No se pudo apagar el torque");
+            return;
+          }
+          Serial.println("Torque apagado");
+      
+          // Configurar límites de ángulo
+          if (!dxl.write(servos[index].id, AX_CW_ANGLE_LIMIT_ADDR, (uint8_t*)&AX_CW_limit, AX_ANGLE_LIMIT_ADDR_LEN, TIMEOUT) ||
+              !dxl.write(servos[index].id, AX_CCW_ANGLE_LIMIT_ADDR, (uint8_t*)&AX_CCW_limit, AX_ANGLE_LIMIT_ADDR_LEN, TIMEOUT)) {
+            Serial.println("Error: No se pudo configurar el modo de operación");
+            return;
+          }
+          Serial.println("Modo de operación configurado");
+      
+          // Configurar velocidad
+          uint16_t speed = servos[index].V; 
+          if (!dxl.write(servos[index].id,AX_MOVING_SPEED_ADDR, (uint8_t*)&speed, AX_MOVING_SPEED_ADDR_LEN, TIMEOUT)) {
+            Serial.println("Error: No se pudo configurar la velocidad");
+            return;
+          }
+          Serial.println("Velocidad de movimiento configurada");
+      
+          // Activar torque
+          if (!dxl.write(servos[index].id, AX_TORQUE_ENABLE_ADDR, (uint8_t*)&TURN_ON, AX_TORQUE_ENABLE_ADDR_LEN, TIMEOUT)) {
+            Serial.println("Error: No se pudo activar el torque");
+            return;
+          }
+          Serial.println("Torque activado");
+      
+        } else {
+          Serial.println("Error: No se pudo encontrar el Dynamixel.");
+          return;
+        }
+    //==============================fin de configuracion del AX18 ====================================// 
+        
+        if (type == "unit") {     
+          //dxl.write(servos[index].id, AX_GOAL_POSITION_ADDR, (uint8_t*)valuePos, AX_GOAL_POSITION_ADDR_LEN, TIMEOUT); // Posición en formato raw
+          dxl.setGoalPosition(servos[index].id, valuePos);
+      } else if (type == "angle") {
+        int raw_position = (int)(valuePos * 1023.0 / 300.0);
+        dxl.setGoalPosition(id, raw_position ); // Posición en grados convertidos
+      }
+
+      
+    }
 
 
+    //si es el MX106
+    if (index == 0) { 
+      dxl.setPortProtocolVersion(1.0f);
+      dxl.ping(servos[index].id);
+      // Configuración adicional si se encuentra un Dynamixel
+      dxl.torqueOff(servos[index].id);
+      dxl.setOperatingMode(servos[index].id, OP_POSITION);
+      dxl.torqueOn(servos[index].id);
+      
+      if (type == "unit") {
+        dxl.setGoalPosition(id, valuePos); // Posición en formato raw
+        
+      } else if (type == "angle") {
+        dxl.setGoalPosition(id, valuePos, UNIT_DEGREE); // Posición en grados
+      }
+    //servoEnMovimiento= true;  // Cambiar global a arreglo por servo
+    
+    idServoMovimiento = servos[index].id;
+    posObjetivo = valuePos;
+    }
 
 }
-
-
-
-//funcion para ejecutar la secuencia
-
-
 
 //funcion para guardar el punto para una trayectoria
 
@@ -270,7 +320,31 @@ void addPoint(int index, String type, int valuePos) {
     servos[index].puntos[i].tipo = type;
     servos[index].contadorPuntos++;
     Serial.println("Punto agregado correctamente");
+    Serial.print("contador: ");
+    Serial.println(servos[index].contadorPuntos);  
   } else {
     Serial.println("Error: no se puede agregar más puntos");
   }
 }
+
+//funcion para ejecutar la secuencia
+void executeSequence(){
+  // 1. Obtener máximo número de puntos de cada servo
+  maxPoints = 0;
+  for (int i = 0; i < MAX_SERVOS; i++) {
+    if (servos[i].contadorPuntos > maxPoints){
+      maxPoints = servos[i].contadorPuntos;
+    }
+
+  }
+  Serial.print("Punto maximo ");
+  Serial.println( maxPoints);
+  ejecutandoSecuencia = true;
+
+
+
+  
+}
+
+
+

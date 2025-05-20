@@ -31,7 +31,7 @@ String addPointJSON(String servo, String Type, String value) {
     return jsonString2;  // Retornar el string JSON
 }
 //para mandar los nuevos parametros de movimiento PID, Vel y Acel
-String changeMoveParamet(String servo, String P, String I,String D, String V, String A ){        
+String changeMoveParametJSON(String servo, String P, String I,String D, String V, String A ){        
     JDoc = JSONVar();  // Limpiar el contenido de JDoc 
         // Asignación de los valores a los campos JSON
     JDoc["servo"] = servo;
@@ -47,7 +47,7 @@ String changeMoveParamet(String servo, String P, String I,String D, String V, St
     return jsonString;  // Retornar el string JSON    
 }
 
-String startSequence(){        
+String startSequenceJSON(){        
     JDoc = JSONVar();  // Limpiar el contenido de JDoc 
         // Asignación de los valores a los campos JSON
     JDoc["start"] = "1";
@@ -58,7 +58,7 @@ String startSequence(){
     return jsonString;  // Retornar el string JSON    
 }
 
-String scanResults(ServoInfo servos[], int count) {
+String scanResultsJSON(ServoInfo servos[], int count) {
   JSONVar JArray;  // Inicializar objeto JSON
 
   for (int i = 0; i < count; i++) {

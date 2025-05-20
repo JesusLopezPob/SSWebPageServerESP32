@@ -80,27 +80,27 @@ const uint8_t TURN_OFF = 0;
 #define TIMEOUT 1000
 
 
-/*
+
 //============ MX106 ====================================//
 
 // Direcciones para Protocolo 2.0 MX-106
-#define MX_TORQUE_ENABLE_ADDR      64
-#define MX_MIN_POSITION_LIMIT      52
-#define MX_MAX_POSITION_LIMIT      48
-#define MX_GOAL_POSITION_ADDR      116
-#define MX_LED_ADDR                65
-#define MX_MOVING_SPEED_ADDR       104
+#define MX_TORQUE_ENABLE_ADDR      24
+#define MX_MIN_POSITION_LIMIT      6
+#define MX_MAX_POSITION_LIMIT      8
+#define MX_GOAL_POSITION_ADDR      30
+#define MX_LED_ADDR                25
+#define MX_MOVING_SPEED_ADDR       32
 
 #define MX_TORQUE_ENABLE_ADDR_LEN  1
-#define MX_POSITION_LIMIT_LEN      4
-#define MX_GOAL_POSITION_ADDR_LEN  4
+#define MX_POSITION_LIMIT_LEN      2
+#define MX_GOAL_POSITION_ADDR_LEN  2
 #define MX_LED_ADDR_LEN            1
-#define MX_MOVING_SPEED_ADDR_LEN   4
+#define MX_MOVING_SPEED_ADDR_LEN   2
 
 // Nueva definición para leer la posición actual en Protocolo 2.0 MX106
-#define PRESENT_POSITION_ADDR      132
-#define PRESENT_POSITION_ADDR_LEN  4
-*/
+#define MX_PRESENT_POSITION_ADDR      132
+#define MX_PRESENT_POSITION_ADDR_LEN  4
+
 
 
 // Configuración Servo 1 
@@ -123,6 +123,11 @@ struct ServoInfo {
   int baudrate;
   int model_number;
 };
+
+
+// variables de secuencia
+
+int pointsCount[MAX_SERVOS] = {0, 0, 0, 0}; //array que dice la longuitud de la trayectoria de cada servo
 
   ServoInfo scanDXL[4];
 
@@ -154,3 +159,26 @@ struct ServoConfig {
 // =========================
 //Sensores Finales de carrera
 // =========================
+
+
+
+// =========================
+//pseudo maquina de estados para loop
+// =========================
+bool ejecutandoSecuencia = false;
+int maxPoints =0;
+int currentPos=0;
+
+
+
+int idServoMovimiento ;
+int posObjetivo;
+int tolerance=10;
+
+
+int currentPoint = 0;         // Punto actual en la secuencia
+int currentServo = 0;         // Servo actual en el punto
+bool puntoEnEjecucion = false; // Controla si ya se envió el comando de movimiento
+
+bool servoActivo[MAX_SERVOS] = {true, false, false, false};  // modifiquen para pruebas
+
