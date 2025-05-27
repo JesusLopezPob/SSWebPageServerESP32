@@ -8,7 +8,7 @@ void configDXL(){
   DXL_SERIAL.begin(DXL_Baud, SERIAL_8N1, RX_PIN, TX_PIN);
   dxl.begin(DXL_Baud);
 
-  // eliminar la trayectoria y resetear el contadorPunto en caso de reseteo o alguna otra situacion
+      // eliminar la trayectoria y resetear el contadorPunto en caso de reseteo o alguna otra situacion
   for (int i = 0; i < MAX_SERVOS; i++) {
     servos[i].contadorPuntos=0;
     for (int j=0; j<10;j++){
@@ -17,8 +17,6 @@ void configDXL(){
 
     }
   }
-
-    
   for (int i = 0; i < 4; i++) {
       // Definir los ID
       servos[i].id = (i == 0) ? 4 : i; //  { 4, 1, 2, 3}
@@ -37,7 +35,7 @@ void configDXL(){
       servos[i].D = (i < 3) ? 1 : -1;     // { 1, 1, 1 , -1}
 
       // Definir V y A
-      servos[i].V = (i < 3) ? 100 : 50;   // { 100, 100, 100 , 50}
+      servos[i].V = (i < 3) ? 50 : 30;   // { 50, 50, 50 , 30}
       servos[i].A = (i < 3) ? 50 : -1;    // { 50, 50, 50, -1}
 
       servos[i].contadorPuntos = 0;
@@ -54,26 +52,38 @@ void configDXL(){
   dxl.setPortProtocolVersion(1.0f);
 
   uint8_t id_Mx= servos[0].id;
-  dxl.ping(id_Mx);
-  dxl.torqueOff(id_Mx);
-  dxl.setOperatingMode(id_Mx, OP_POSITION);
-  dxl.writeControlTableItem(POSITION_P_GAIN, id_Mx, servos[id_Mx].P);
-  dxl.writeControlTableItem(POSITION_I_GAIN, id_Mx, servos[id_Mx].I);
-  dxl.writeControlTableItem(POSITION_D_GAIN, id_Mx, servos[id_Mx].D);
+  found=dxl.ping(id_Mx);
+  if (!found) {
+    Serial.print("Servo con ID ");
+    Serial.print(id_Mx);
+    Serial.println(" no detectado. Se omite configuración.");
+    servoActivo[0]=false;
+    //return;
+  }else {
+      dxl.torqueOff(id_Mx);
+      dxl.setOperatingMode(id_Mx, OP_POSITION);
+      dxl.writeControlTableItem(POSITION_P_GAIN, id_Mx, servos[0].P);
+      dxl.writeControlTableItem(POSITION_I_GAIN, id_Mx, servos[0].I);
+      dxl.writeControlTableItem(POSITION_D_GAIN, id_Mx, servos[0].D);
 
-    // Configurar velocidad
-    uint16_t speedMx = servos[0].V; 
-    
-    if (!dxl.write(id_Mx,MX_MOVING_SPEED_ADDR, (uint8_t*)&speedMx, MX_MOVING_SPEED_ADDR_LEN, TIMEOUT)) {
-      Serial.println("Error: No se pudo configurar la velocidad");
-      return;
-    }
-    
-    //dxl.writeControlTableItem(PROFILE_VELOCITY, id_Mx, servos[id_Mx].V);
-    Serial.println("Velocidad de movimiento configurada");
-      
-  dxl.torqueOn(id_Mx);
-  Serial.println("Servo MX " + String(id_Mx) + " configurado en posición (Protocolo 1.0).");
+        // Configurar velocidad
+        uint16_t speedMx = servos[0].V; 
+        
+        if (!dxl.write(id_Mx,MX_MOVING_SPEED_ADDR, (uint8_t*)&speedMx, MX_MOVING_SPEED_ADDR_LEN, TIMEOUT)) {
+          Serial.println("Error: No se pudo configurar la velocidad");
+          return;
+        }
+        
+        //dxl.writeControlTableItem(PROFILE_VELOCITY, id_Mx, servos[id_Mx].V);
+        Serial.println("Velocidad de movimiento configurada");
+          
+      dxl.torqueOn(id_Mx);
+      Serial.println("Servo MX " + String(id_Mx) + " configurado en posición (Protocolo 1.0).");
+      servoActivo[0]=true;
+
+
+  }
+
 
   //config para XM
 
@@ -81,19 +91,33 @@ void configDXL(){
 
   for  (int i=1; i<=2;i++){
     uint8_t id = servos[i].id;
-    dxl.ping(id);
-    dxl.torqueOff(id);
-    dxl.setOperatingMode(id, OP_POSITION);
-    
-    // Aplicar valores iniciales del PID y otros parámetros
-    dxl.writeControlTableItem(POSITION_P_GAIN, id, servos[i].P);
-    dxl.writeControlTableItem(POSITION_I_GAIN, id, servos[i].I);
-    dxl.writeControlTableItem(POSITION_D_GAIN, id, servos[i].D);
-    dxl.writeControlTableItem(PROFILE_VELOCITY, id, servos[i].V);
-    dxl.writeControlTableItem(PROFILE_ACCELERATION, id, servos[i].A);
+    found=dxl.ping(id);
+    if (!found) {
+      Serial.print("Servo con ID ");
+      Serial.print(id);
+      Serial.println(" no detectado. Se omite configuración.");
+      servoActivo[i]=false;
 
-    dxl.torqueOn(id);
-    Serial.println("Servo " + String(id) + " configurado en posición (Protocolo 2.0).");
+    }else {
+        dxl.torqueOff(id);
+        dxl.setOperatingMode(id, OP_POSITION);
+        
+        // Aplicar valores iniciales del PID y otros parámetros
+        dxl.writeControlTableItem(POSITION_P_GAIN, id, servos[i].P);
+        dxl.writeControlTableItem(POSITION_I_GAIN, id, servos[i].I);
+        dxl.writeControlTableItem(POSITION_D_GAIN, id, servos[i].D);
+        dxl.writeControlTableItem(PROFILE_VELOCITY, id, servos[i].V);
+        dxl.writeControlTableItem(PROFILE_ACCELERATION, id, servos[i].A);
+
+        dxl.torqueOn(id);
+        Serial.println("Servo " + String(id) + " configurado en posición (Protocolo 2.0).");
+        servoActivo[i]=true;
+
+    }
+
+
+
+    
     
   }
 
@@ -135,6 +159,7 @@ void configDXL(){
   
     } else {
       Serial.println("Error: No se pudo encontrar el Dynamixel.");
+      servoActivo[3]=false;
       return;
     }
 //==============================fin de configuracion del AX18 ====================================// 
@@ -212,7 +237,6 @@ void moveDxl(int index, String type, int valuePos) {
 
 
   int currentPos = 0;
-  int tolerance = 5; // Ajusta según precisión deseada
 
   //si utiliza el protocolo 2.0
     if (prot == 2) {
@@ -345,6 +369,3 @@ void executeSequence(){
 
   
 }
-
-
-

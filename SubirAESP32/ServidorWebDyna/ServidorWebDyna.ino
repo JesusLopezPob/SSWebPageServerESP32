@@ -1,5 +1,5 @@
 //ESP32 - WiFi - WEB SERVER con Dynamixel 
-//Pagina con UI para el control de servos dynamixel
+//Pagina con HMI para el control de servos dynamixel
 //Control de posicion, definicon de vel, acel y PID
 //Ejecucion de secuencias para muñeca robotica
 //Uso de servidor asíncrono, DNS, JSON, SPIFFS
@@ -15,7 +15,7 @@
 #include "json.hpp"
 #include "server.hpp"
 #include "DxlConfig.hpp"
-
+#include <nvs_flash.h>
 
 void setup() {
   // put your setup code here, to run once:
@@ -23,80 +23,36 @@ void setup() {
   Serial.begin(115200);
 
 
-  //inciar WIFI
+
+
+   //inciar WIFI
   wifi_AP_init(ssid,pass);
   delay(1000);
-  
+
+
+
   // Acceder al SPIFFS
   spiffs_init();
+
 
    //configurar los servomotores
   configDXL();
   delay(100);
-  
+  Serial.println("Configuracion completa."); 
+   for (int p = 0; p < 4; p++) {
+    Serial.println(servoActivo[p]);
+ }
   //incializar el Server
   server_init();
+
+  
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-/*
-if (ejecutandoSecuencia) {
-    for (int pointIdx = 0; pointIdx < maxPoints; pointIdx++) {
-    // Ejecutar para cada servo
-    for (int servoIdx = 0; servoIdx < MAX_SERVOS; servoIdx++) {
-      if (pointIdx < servos[servoIdx].contadorPuntos) {
-        int valuePos= servos[servoIdx].puntos[pointIdx].valorPosicion;
-        String type= servos[servoIdx].puntos[pointIdx].tipo;
-        //funcion de mover
-        Serial.print("moviendo servo ");
-        Serial.print(servoIdx);
-        Serial.print(" a ");
-        Serial.print(valuePos);
-        Serial.print(" ");
-        Serial.println(type);  // type debe ser char* o String
-
-        moveDxl(servoIdx,  type, valuePos);
-        if (servoEnMovimiento) {
-        int currentPos = dxl.getPresentPosition(idServoMovimiento);
-        Serial.println(currentPos);
-        if (abs(currentPos - valuePos) <= tolerance) {
-            servoEnMovimiento = false;
-            Serial.println("Movimiento completado");
-        }
-
-    }
-
-        
-    }
-  }
-
-
-  delay(1000);
   
-}
-    Serial.print("Secuencia completada ");
-//4. eliminar la trayectoria y resetear el contadorPunto
-  for (int i = 0; i < MAX_SERVOS; i++) {
-    servos[i].contadorPuntos=0;
-    for (int j=0; j<10;j++){
-      servos[i].puntos[j].valorPosicion=0.0;
-      servos[i].puntos[j].tipo.clear();
-
-    }
-  }
-ejecutandoSecuencia=false;
-
-
-
-
-}
-
-*/
-
-
-  if (ejecutandoSecuencia) {
+if (ejecutandoSecuencia) {
     if (!puntoEnEjecucion) {
       // Saltar servos inactivos o sin puntos en este índice
       while (currentServo < MAX_SERVOS && 
@@ -117,6 +73,7 @@ ejecutandoSecuencia=false;
         if (currentPoint >= maxPoints) {
           Serial.println("Secuencia completada");
           ejecutandoSecuencia = false;
+          currentPoint=0;
 
           // Limpiar trayectoria
           for (int i = 0; i < MAX_SERVOS; i++) {
@@ -138,7 +95,8 @@ ejecutandoSecuencia=false;
         Serial.print(val);
         Serial.print(" ");
         Serial.println(typ);
-
+        
+        dxl.setPortProtocolVersion(servos[currentServo]. protocolo);
         moveDxl(currentServo, typ, val);
         puntoEnEjecucion = true;
       }
@@ -156,6 +114,7 @@ ejecutandoSecuencia=false;
 
         currentServo++;
         puntoEnEjecucion = false;
+      }
 
         // Si terminamos con todos los servos de este punto, avanzar al siguiente punto
         if (currentServo >= MAX_SERVOS) {
@@ -164,10 +123,12 @@ ejecutandoSecuencia=false;
           Serial.print("Punto ");
           Serial.print(currentPoint);
           Serial.println(" completado");
+        }
 
           if (currentPoint >= maxPoints) {
             Serial.println("Secuencia completada");
             ejecutandoSecuencia = false;
+            currentPoint=0;
 
             // Limpiar trayectoria
             for (int i = 0; i < MAX_SERVOS; i++) {
@@ -176,16 +137,12 @@ ejecutandoSecuencia=false;
                 servos[i].puntos[j].valorPosicion = 0.0;
                 servos[i].puntos[j].tipo.clear();
               }
-            }
-          }
-        }
+            }     
       }
     }
   }
 
 
 
-
     
 }
-

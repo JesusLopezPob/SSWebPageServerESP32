@@ -173,12 +173,13 @@ int currentPos=0;
 
 int idServoMovimiento ;
 int posObjetivo;
-int tolerance=10;
+int tolerance=1;
 
 
 int currentPoint = 0;         // Punto actual en la secuencia
 int currentServo = 0;         // Servo actual en el punto
 bool puntoEnEjecucion = false; // Controla si ya se envió el comando de movimiento
 
-bool servoActivo[MAX_SERVOS] = {true, false, false, false};  // modifiquen para pruebas
+bool servoActivo[MAX_SERVOS] = {true, true, true, true};  // modifiquen para pruebas
 
+bool found=false;
