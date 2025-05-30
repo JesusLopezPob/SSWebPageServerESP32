@@ -67,15 +67,9 @@ void configDXL(){
       dxl.writeControlTableItem(POSITION_D_GAIN, id_Mx, servos[0].D);
 
         // Configurar velocidad
-        uint16_t speedMx = servos[0].V; 
+      dxl.writeControlTableItem(PROFILE_VELOCITY, id_Mx, 50);
+      dxl.writeControlTableItem(PROFILE_ACCELERATION, id_Mx, 30);
         
-        if (!dxl.write(id_Mx,MX_MOVING_SPEED_ADDR, (uint8_t*)&speedMx, MX_MOVING_SPEED_ADDR_LEN, TIMEOUT)) {
-          Serial.println("Error: No se pudo configurar la velocidad");
-          return;
-        }
-        
-        //dxl.writeControlTableItem(PROFILE_VELOCITY, id_Mx, servos[id_Mx].V);
-        Serial.println("Velocidad de movimiento configurada");
           
       dxl.torqueOn(id_Mx);
       Serial.println("Servo MX " + String(id_Mx) + " configurado en posición (Protocolo 1.0).");
@@ -238,9 +232,36 @@ void moveDxl(int index, String type, int valuePos) {
 
   int currentPos = 0;
 
-  //si utiliza el protocolo 2.0
-    if (prot == 2) {
-      dxl.setPortProtocolVersion(2.0f);
+    if (actualProt != prot) {
+    dxl.setPortProtocolVersion(prot);
+    actualProt = prot;
+    changeProt = true;
+    Serial.printf("Cambiando protocolo a %.1f\n", actualProt);
+  }
+
+    //si es el MX106
+    if (index == 0) { 
+      //dxl.setPortProtocolVersion(1.0f);
+      dxl.ping(servos[index].id);
+      // Configuración adicional si se encuentra un Dynamixel
+      dxl.torqueOff(servos[index].id);
+      dxl.setOperatingMode(servos[index].id, OP_POSITION);
+      dxl.torqueOn(servos[index].id);
+      
+      if (type == "unit") {
+        dxl.setGoalPosition(id, valuePos); // Posición en formato raw
+        
+      } else if (type == "angle") {
+        dxl.setGoalPosition(id, valuePos, UNIT_DEGREE); // Posición en grados
+      }
+    //servoEnMovimiento= true;  // Cambiar global a arreglo por servo
+    
+    idServoMovimiento = servos[index].id;
+    posObjetivo = valuePos;
+    }
+  //
+    if (index == 1 ||index==2) {
+     // dxl.setPortProtocolVersion(2.0f);
       dxl.ping(servos[index].id);
       // Configuración adicional si se encuentra un Dynamixel
       dxl.torqueOff(servos[index].id);
@@ -257,10 +278,9 @@ void moveDxl(int index, String type, int valuePos) {
   //si es el AX18
     if (index == 3) {  
     
-      dxl.setPortProtocolVersion(1.0f);
+      //dxl.setPortProtocolVersion(1.0f);
     //==============================configuro para iniciar al AX18 ====================================// 
 
-      dxl.setPortProtocolVersion(1.0f);
         if (dxl.ping(servos[index].id)) {
           Serial.println("Dynamixel AX18A encontrado y listo.");
       
@@ -311,27 +331,10 @@ void moveDxl(int index, String type, int valuePos) {
       
     }
 
+    IDSimple=id;
+    moveSimple=true;
 
-    //si es el MX106
-    if (index == 0) { 
-      dxl.setPortProtocolVersion(1.0f);
-      dxl.ping(servos[index].id);
-      // Configuración adicional si se encuentra un Dynamixel
-      dxl.torqueOff(servos[index].id);
-      dxl.setOperatingMode(servos[index].id, OP_POSITION);
-      dxl.torqueOn(servos[index].id);
-      
-      if (type == "unit") {
-        dxl.setGoalPosition(id, valuePos); // Posición en formato raw
-        
-      } else if (type == "angle") {
-        dxl.setGoalPosition(id, valuePos, UNIT_DEGREE); // Posición en grados
-      }
-    //servoEnMovimiento= true;  // Cambiar global a arreglo por servo
-    
-    idServoMovimiento = servos[index].id;
-    posObjetivo = valuePos;
-    }
+
 
 }
 

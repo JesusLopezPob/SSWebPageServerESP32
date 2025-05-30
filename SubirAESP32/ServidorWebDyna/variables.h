@@ -182,4 +182,13 @@ bool puntoEnEjecucion = false; // Controla si ya se envió el comando de movimie
 
 bool servoActivo[MAX_SERVOS] = {true, true, true, true};  // modifiquen para pruebas
 
+bool moveSimple=false;
+int IDSimple=0;
+
+float actualProt =1.0f;
+bool changeProt=false;
+
 bool found=false;
+
+
+bool check=true;

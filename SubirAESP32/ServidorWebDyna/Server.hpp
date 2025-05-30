@@ -13,6 +13,10 @@ void server_init(){
 
 // Manejador del endpoint /move
 server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
+    unsigned long startTime = millis();  // Marca el inicio
+    
+    //request->send(200, "text/plain", "OK");  // Enviar respuesta
+    
     String servo = request->getParam("servo")->value();  // Parámetro de la solicitud
     String type  = request->getParam("type")->value();
     String value = request->getParam("value")->value();
@@ -27,8 +31,18 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
   
     // Enviar feedback por SSE (usando la función correcta con los parámetros)
     events.send(moveServoJSON(servo, type, value).c_str(), ("servo" + servo).c_str(), millis());
+
+
   
     request->send(200, "text/plain", "OK");  // Enviar respuesta
+
+        // Marca el final y calcula la latencia
+        /*
+    unsigned long endTime = millis();
+    unsigned long latency = endTime - startTime;
+
+    Serial.printf("Tiempo de procesamiento /move: %lu ms\n", latency);
+    */
 });
 
  //mandar comando agregar punto al servo         
@@ -101,8 +115,24 @@ server.on("/Scan", HTTP_GET, [](AsyncWebServerRequest *request){
   
     request->send(200, "text/plain", "OK");  // Enviar respuesta
 });
-        
 
+
+server.on("/pingtest", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain", "pong");
+});
+
+server.on("/reportLatencia", HTTP_GET, [](AsyncWebServerRequest *request){
+  if(request->hasParam("valor")){
+    String val = request->getParam("valor")->value();
+    Serial.print("Latencia reportada: ");
+    Serial.println(val);
+    // Aquí puedes guardar o usar ese valor
+    request->send(200, "text/plain", "OK");
+  } else {
+    request->send(400, "text/plain", "Falta parámetro valor");
+  }
+  check=true;
+});
 
      // → Al conectarse un cliente
      events.onConnect([](AsyncEventSourceClient *client){

@@ -16,3 +16,30 @@ void wifi_AP_init(const char* ssid, const char* pass) {
   
   Serial.println("No se pudo configurar el AP después de 5 intentos.");
 }
+
+//configuracion para la esp32 a una conexion externa
+void connectToWiFi() {
+
+  const char* SSId = "JESUSLAP7276";      
+  const char* password = "41#3Mf83";    
+  
+  Serial.println("Conectando a WiFi...");
+  WiFi.begin(SSId, password);
+
+  unsigned long startAttemptTime = millis();
+  const unsigned long timeout = 10000; // 10 segundos de tiempo de espera
+
+  // Esperar hasta que se conecte o se agote el tiempo
+  while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < timeout) {
+    Serial.print(".");
+    delay(500);
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\n✅ Conectado exitosamente.");
+    Serial.print("IP asignada: ");
+    Serial.println(WiFi.localIP());
+  } else {
+    Serial.println("\n❌ No se pudo conectar al WiFi.");
+  }
+}

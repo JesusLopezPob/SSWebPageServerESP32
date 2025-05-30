@@ -46,7 +46,14 @@ if (!!window.EventSource) {
       var obj = JSON.parse(e.data);
       document.getElementById(`status_servo${i}`).innerText = `Posición: ${obj.value}`;
     }, false);
-  
+
+    source.addEventListener(`latencia`, function(e) {
+      console.log(" Trigger de ping recibido");
+      medirLatenciaHTTP();
+    },false);
+
+
+
   }
   
   
@@ -202,7 +209,29 @@ if (!!window.EventSource) {
     console.log(`✅ Ejecutando secuencia alternada...)`);
     
   }
-  
+
+function medirLatenciaHTTP() {
+  const inicio = performance.now(); // Marca el inicio
+
+  fetch('/pingtest') // El ESP32 debe responder rápido a esta ruta
+    .then(response => response.text())
+    .then(() => {
+      const fin = performance.now(); // Marca el final
+      const latenciaRTT = fin - inicio; // Calcula RTT
+
+      console.log(`⏱️ Latencia RTT: ${latenciaRTT.toFixed(2)} ms`);
+      //document.getElementById('latencia').innerText = `Latencia: ${latenciaRTT.toFixed(2)} ms`;
+
+      // Opcional: Reporta al ESP32 o base de datos
+      fetch(`/reportLatencia?valor=${latenciaRTT.toFixed(2)}`);
+    })
+    .catch(error => {
+      console.error("❌ Error al medir latencia:", error);
+      //document.getElementById('latencia').innerText = `Error al medir latencia`;
+    });
+}
+
+
 
   
   // Actualizar estado cada segundo

@@ -27,6 +27,7 @@ void setup() {
 
    //inciar WIFI
   wifi_AP_init(ssid,pass);
+  //connectToWiFi();
   delay(1000);
 
 
@@ -96,7 +97,7 @@ if (ejecutandoSecuencia) {
         Serial.print(" ");
         Serial.println(typ);
         
-        dxl.setPortProtocolVersion(servos[currentServo]. protocolo);
+        //dxl.setPortProtocolVersion(servos[currentServo]. protocolo);
         moveDxl(currentServo, typ, val);
         puntoEnEjecucion = true;
       }
@@ -112,9 +113,11 @@ if (ejecutandoSecuencia) {
         Serial.print(" llegó al punto ");
         Serial.println(currentPoint);
 
+
         currentServo++;
         puntoEnEjecucion = false;
       }
+
 
         // Si terminamos con todos los servos de este punto, avanzar al siguiente punto
         if (currentServo >= MAX_SERVOS) {
@@ -139,10 +142,47 @@ if (ejecutandoSecuencia) {
               }
             }     
       }
+
+ 
     }
   }
 
 
+if (moveSimple) {
 
-    
+    int id=IDSimple;
+    int currentPos = dxl.getPresentPosition(id);
+    int targetPos = servos[currentServo].puntos[currentPoint].valorPosicion;
+    //Serial.printf("Posicion objetivo →  %d,Posicion actual →  %d \n",targetPos, currentPos);
+
+      if (abs(currentPos - targetPos) <= 10) {
+        Serial.print("Servo ");
+        //Serial.print(currentServo);
+        Serial.println(" termino de moverse ");
+        moveSimple=false;
+      }
+      /*
+    int current = dxl.readControlTableItem(PRESENT_CURRENT, id);
+    int temp = dxl.readControlTableItem(PRESENT_TEMPERATURE, id);
+    int error = dxl.readControlTableItem(HARDWARE_ERROR_STATUS, id);
+    Serial.printf("Diagnóstico servo %d → Corriente: %d, Temperatura: %d°C, Error: 0x%02X\n", id, current, temp, error);
+    delay(10);
+    */
+  
+}
+
+/*
+//medicion de latencia
+unsigned long t_actual = millis();
+if (t_actual -  t_anterior >= t_sensado) {
+  t_anterior = t_actual;
+  if (events.count() > 0 && check ) {
+    //Serial.println("chequeo de latencia");
+    events.send("Latencia OK", "latencia", millis());
+    check=false;
+  }
+}
+*/
+
+ 
 }
