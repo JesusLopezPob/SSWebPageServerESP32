@@ -100,6 +100,7 @@ if (ejecutandoSecuencia) {
         //dxl.setPortProtocolVersion(servos[currentServo]. protocolo);
         moveDxl(currentServo, typ, val);
         puntoEnEjecucion = true;
+        moveSimple=false;
       }
     } else {
       // Esperar que el servo actual llegue a la posición objetivo
