@@ -98,26 +98,46 @@ if (ejecutandoSecuencia) {
         Serial.println(typ);
         
         //dxl.setPortProtocolVersion(servos[currentServo]. protocolo);
-        moveDxl(currentServo, typ, val);
+        moveDxl(currentServo, typ, val,0);
         puntoEnEjecucion = true;
-        moveSimple=false;
       }
     } else {
       // Esperar que el servo actual llegue a la posición objetivo
       int id = servos[currentServo].id;
-      int currentPos = dxl.getPresentPosition(id);
-      int targetPos = servos[currentServo].puntos[currentPoint].valorPosicion;
+      if (servos[currentServo].puntos[currentPoint].tipo == "angle"){
+        
+        int currentPos = dxl.getPresentPosition(id, UNIT_DEGREE);
+        int targetPos = servos[currentServo].puntos[currentPoint].valorPosicion;
+  
+        if (abs(currentPos - targetPos) <= angleTolerance) {
+          Serial.print("Servo ");
+          Serial.print(currentServo);
+          Serial.print(" llegó al punto ");
+          Serial.println(currentPoint);
+  
+  
+          currentServo++;
+          puntoEnEjecucion = false;
+        }
+        
+      }else {
+        
+        int currentPos = dxl.getPresentPosition(id);
+        int targetPos = servos[currentServo].puntos[currentPoint].valorPosicion;
+  
+        if (abs(currentPos - targetPos) <= tolerance) {
+          Serial.print("Servo ");
+          Serial.print(currentServo);
+          Serial.print(" llegó al punto ");
+          Serial.println(currentPoint);
+  
+  
+          currentServo++;
+          puntoEnEjecucion = false;
+        }
 
-      if (abs(currentPos - targetPos) <= tolerance) {
-        Serial.print("Servo ");
-        Serial.print(currentServo);
-        Serial.print(" llegó al punto ");
-        Serial.println(currentPoint);
-
-
-        currentServo++;
-        puntoEnEjecucion = false;
       }
+
 
 
         // Si terminamos con todos los servos de este punto, avanzar al siguiente punto
@@ -152,16 +172,34 @@ if (ejecutandoSecuencia) {
 if (moveSimple) {
 
     int id=IDSimple;
-    int currentPos = dxl.getPresentPosition(id);
-    int targetPos = servos[currentServo].puntos[currentPoint].valorPosicion;
-    //Serial.printf("Posicion objetivo →  %d,Posicion actual →  %d \n",targetPos, currentPos);
-
-      if (abs(currentPos - targetPos) <= 10) {
+    if (typeSimple=="angle"){
+      int currentPos = dxl.getPresentPosition(id,UNIT_DEGREE);
+      int targetPos = posSimple;
+      //Serial.printf("Posicion objetivo →  %d,Posicion actual →  %d \n",targetPos, currentPos);
+  
+      if (abs(currentPos - targetPos) <= angleTolerance) {
         Serial.print("Servo ");
         //Serial.print(currentServo);
         Serial.println(" termino de moverse ");
         moveSimple=false;
+        
+      }    
+    }else {
+
+      int currentPos = dxl.getPresentPosition(id);
+      int targetPos = posSimple;
+      //Serial.printf("Posicion objetivo →  %d,Posicion actual →  %d \n",targetPos, currentPos);
+  
+      if (abs(currentPos - targetPos) <= tolerance) {
+        Serial.print("Servo ");
+        //Serial.print(currentServo);
+        Serial.println(" termino de moverse ");
+        moveSimple=false;
+        
       }
+    }
+    
+
       /*
     int current = dxl.readControlTableItem(PRESENT_CURRENT, id);
     int temp = dxl.readControlTableItem(PRESENT_TEMPERATURE, id);
@@ -171,6 +209,14 @@ if (moveSimple) {
     */
   
 }
+
+
+
+
+
+
+
+
 
 /*
 //medicion de latencia

@@ -47,6 +47,20 @@ String changeMoveParametJSON(String servo, String P, String I,String D, String V
     return jsonString;  // Retornar el string JSON    
 }
 
+//para mandar los nuevos parametros de servo ID y baudrate
+String changeServoParametJSON(String servo, String id, String baud ){        
+    JDoc = JSONVar();  // Limpiar el contenido de JDoc 
+        // Asignación de los valores a los campos JSON
+    JDoc["servo"] = servo;
+    JDoc["id"] = id;
+    JDoc["baud"] = baud;
+
+     // Convertir el JSON a string
+    String jsonString = JSON.stringify(JDoc);
+    Serial.println("→ " + jsonString);  // Imprimir JSON en consola
+    return jsonString;  // Retornar el string JSON    
+}
+
 String startSequenceJSON(){        
     JDoc = JSONVar();  // Limpiar el contenido de JDoc 
         // Asignación de los valores a los campos JSON

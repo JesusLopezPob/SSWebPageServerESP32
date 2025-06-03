@@ -173,7 +173,8 @@ int currentPos=0;
 
 int idServoMovimiento ;
 int posObjetivo;
-int tolerance=1;
+int tolerance=20;
+int angleTolerance=2;
 
 
 int currentPoint = 0;         // Punto actual en la secuencia
@@ -184,6 +185,8 @@ bool servoActivo[MAX_SERVOS] = {true, true, true, true};  // modifiquen para pru
 
 bool moveSimple=false;
 int IDSimple=0;
+String typeSimple="";
+float posSimple=0.0;
 
 float actualProt =1.0f;
 bool changeProt=false;

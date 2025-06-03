@@ -72,8 +72,10 @@ void configDXL(){
         
           
       dxl.torqueOn(id_Mx);
-      Serial.println("Servo MX " + String(id_Mx) + " configurado en posición (Protocolo 1.0).");
+      Serial.println("Servo MX " + String(id_Mx) + " configurado en posición (Protocolo 1.0). No Modelo:" +       dxl.getModelNumber(id_Mx));
       servoActivo[0]=true;
+
+
 
 
   }
@@ -221,16 +223,15 @@ int scanServoDxl() {
 }
 
   
-    
-
+   
 //funcion para mover individualmente un servo
-void moveDxl(int index, String type, int valuePos) {
+void moveDxl(int index, String type, int valuePos, bool simple) {
  
   int prot = servos[index].protocolo;  // Asumiendo que servos[] está definido globalmente
   int id = servos[index].id;  // ID del servo
 
 
-  int currentPos = 0;
+  //int currentPos = 0;
 
     if (actualProt != prot) {
     dxl.setPortProtocolVersion(prot);
@@ -251,13 +252,15 @@ void moveDxl(int index, String type, int valuePos) {
       if (type == "unit") {
         dxl.setGoalPosition(id, valuePos); // Posición en formato raw
         
+        
       } else if (type == "angle") {
         dxl.setGoalPosition(id, valuePos, UNIT_DEGREE); // Posición en grados
       }
     //servoEnMovimiento= true;  // Cambiar global a arreglo por servo
-    
+    /*
     idServoMovimiento = servos[index].id;
     posObjetivo = valuePos;
+    */
     }
   //
     if (index == 1 ||index==2) {
@@ -331,8 +334,14 @@ void moveDxl(int index, String type, int valuePos) {
       
     }
 
-    IDSimple=id;
-    moveSimple=true;
+
+    if (simple){
+      moveSimple=true;
+      IDSimple=id;
+      typeSimple=type;
+      posSimple=valuePos;
+    }
+
 
 
 
@@ -368,6 +377,125 @@ void executeSequence(){
   Serial.println( maxPoints);
   ejecutandoSecuencia = true;
 
+}
+
+void changeMoveParamet(int index,float Pvalue,float Ivalue,float Dvalue,int Vvalue,int Avalue){
+  
+  int prot = servos[index].protocolo;  // Asumiendo que servos[] está definido globalmente
+  int id = servos[index].id;  // ID del servo
+
+  //Guardado en la estructura de datos
+  servos[index].P= Pvalue;
+  servos[index].I= Ivalue;
+  servos[index].D= Dvalue;
+  servos[index].V= Vvalue;
+  servos[index].A= Avalue;
+
+  // configuracion al servo dynamixel
+  dxl.torqueOff(id);
+  dxl.setOperatingMode(id, OP_POSITION);
+  
+  // Aplicar valores iniciales del PID y otros parámetros
+  dxl.writeControlTableItem(POSITION_P_GAIN, id, Pvalue );
+  dxl.writeControlTableItem(POSITION_I_GAIN, id,  Ivalue );
+  dxl.writeControlTableItem(POSITION_D_GAIN, id,  Dvalue);
+  dxl.writeControlTableItem(PROFILE_VELOCITY, id,  Vvalue);
+  dxl.writeControlTableItem(PROFILE_ACCELERATION, id, Avalue);
+  
+  dxl.torqueOn(id);
+  Serial.println("Servo " + String(id) + " configurado con nuevos parametros PID ,V,A");
+  
+
+
+  
+}
+
+
+//funcion con los valores para cambio de baudrate de los modelos de Dynamixel
+uint8_t getBaudValue(int index, int desiredBaud) {
+  switch (index) {
+    case 1: // MX-106
+      switch (desiredBaud) {
+        case 2000000: return 0;
+        case 1000000: return 1;
+        case 500000:  return 3;
+        case 400000:  return 4;
+        case 250000:  return 7;
+        case 200000:  return 9;
+        case 115200:  return 16;
+        case 57600:   return 34;
+        case 19200:   return 103;
+        case 9600:    return 207;
+      }
+      break;
+
+    case 2: // XM-430
+    case 3: // XM-430
+      switch (desiredBaud) {
+        case 4500000: return 7;
+        case 4000000: return 6;
+        case 3000000: return 5;
+        case 2000000: return 4;
+        case 1000000: return 3;
+        case 115200:  return 2;
+        case 57600:   return 1;
+        case 9600:    return 0;
+      }
+      break;
+
+    case 4: // AX-18A
+      switch (desiredBaud) {
+        case 1000000: return 1;
+        case 500000:  return 3;
+        case 400000:  return 4;
+        case 250000:  return 7;
+        case 200000:  return 9;
+        case 115200:  return 16;
+        case 57600:   return 34;
+        case 19200:   return 103;
+        case 9600:    return 207;
+      }
+      break;
+  }
+
+  // Valor por defecto (por ejemplo, 1M en MX y AX, 57600 en XM)
+  return 1;
+}
+
+
+void chanceServoParamet(int index, int newBaud, int newID){
+  int id = servos[index].id;  // ID del servo
+
+
+  if (dxl.ping(id)) {
+    
+    Serial.println("Servo detectado correctamente.");
+    // Selección de dirección según si respondió al ping y el índice
+    uint8_t direccionID = (dxl.ping(id) && (index == 1 || index == 2)) ? 0x07 : 0x03;
+
+
+    // Intentar cambiar el ID
+    if (dxl.write(id, direccionID, (uint8_t*)&newID, 1, 100)) {
+      Serial.println("ID cambiado correctamente.");
+      servos[index].id = newID;
+    } else {
+      Serial.println("Error al cambiar el ID.");
+    }
+    
+    uint8_t direccionBaud = (dxl.ping(servos[index].id) && (index == 1 || index == 2)) ? 0x08 : 0x04;
+    uint8_t baudValue = getBaudValue(index, newBaud);    
+
+     if (dxl.write(servos[index].id, direccionBaud, (uint8_t*)&baudValue, 1, 100)) {
+      Serial.println("Baudrate cambiado correctamente.");
+      servos[index].baudrate = newBaud;
+    } else {
+      Serial.println("Error al cambiar el baudrate.");
+    }
+       
+    }else{
+      Serial.println("Servo no encontrado.");
+    }
+    
 
 
   

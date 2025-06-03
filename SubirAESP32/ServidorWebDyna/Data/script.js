@@ -231,6 +231,29 @@ function medirLatenciaHTTP() {
     });
 }
 
+// boton ex
+  function escanearValores() {
+  for (let servo = 1; servo <= 4; servo++) {
+    const tabContent = document.getElementById(`pestana${servo}`);
+    
+    const inputValue = tabContent.querySelector("input[name='value']")?.value || "--";
+    const inputType = tabContent.querySelector("input[name='type']:checked")?.value || "--";
+    document.getElementById(`tabla-pos${servo}`).textContent = inputValue;
+    document.getElementById(`tabla-tipo${servo}`).textContent = inputType;
+
+    const inputP = tabContent.querySelector("input[name='p']")?.value || "--";
+    const inputI = tabContent.querySelector("input[name='i']")?.value || "--";
+    const inputD = tabContent.querySelector("input[name='d']")?.value || "--";
+    document.getElementById(`tabla-pid${servo}`).textContent = `${inputP} / ${inputI} / ${inputD}`;
+
+    const inputV = tabContent.querySelector("input[name='v']")?.value || "--";
+    const inputA = tabContent.querySelector("input[name='a']")?.value || "--";
+    document.getElementById(`tabla-vel${servo}`).textContent = inputV;
+    document.getElementById(`tabla-ace${servo}`).textContent = inputA;
+  }
+
+  alert(" Datos actualizados correctamente en la tabla.");
+}
 
 
   

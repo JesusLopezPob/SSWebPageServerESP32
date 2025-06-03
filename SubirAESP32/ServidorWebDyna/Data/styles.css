@@ -4,10 +4,10 @@
     --grisclaro : #9b9fb5; 
     --grisobscuro: #383737;
     --azulobscuro: #2865af;
-    --verdeclaro: #5cf82c;  
-    --verdeobscuro: #0b4d05;
+    --verdeclaro: #00ff00;  
+    --verdeobscuro: #0c7203;
     --negronotannegro: #060220;
-    --negronotannegro2:#1403fc;
+    --negronotannegro2:#0314fc;
     --naranja: #ff8800;
     --rojo:#ff0000;
     --blanco: #fff;
@@ -26,11 +26,21 @@ html {
     box-sizing: inherit;
 }
 
-body {
+/*body {
     font-family: var(--fuentePrincipal);
     font-size: 1.6rem;
     background-image: linear-gradient(to top, var(--negronotannegro2) 0%, var(--negronotannegro) 100%);
     color: var(--blanco);
+}*/
+
+body {
+  font-family: var(--fuentePrincipal);
+  font-size: 1.6rem;
+  background-image: url('fondo.png'); /* ← Cambia por la ruta de tu imagen */
+  background-size: cover;                /* Que cubra toda la pantalla */
+  background-repeat: no-repeat;          /* Que no se repita */
+  background-position: center center;    /* Que esté centrada */
+  color: var(--blanco);
 }
 
 
@@ -53,40 +63,25 @@ h1,h2,h3{
 }
 
 .linea--izq1 {
-    left: 0;
-    background: linear-gradient(to bottom, #00f, #0ff); /* Azul a celeste */
+  left: 0;
+   
+  background: linear-gradient(to bottom, var(--azul), var(--negronotannegro2)); /* Azul a celeste */
 }
+
 .linea--izq2 {
-    left: 10px; /* separación entre líneas izquierdas */
-    background: linear-gradient(to bottom, #0ff, #00f); /* Celeste a azul */
+  left: 10px; /* separación entre líneas izquierdas */
+  background: linear-gradient(to bottom,  var(--negronotannegro2), var(--azul)); /* Celeste a azul */
 }
 
 .linea--der1 {
-    right: 0;
-    background: linear-gradient(to bottom, #f00, #ff0); /* Rojo a amarillo */
+  right: 0;
+  background: linear-gradient(to bottom, var(--azul), var(--negronotannegro2)); /* Rojo a amarillo */
 }
 .linea--der2 {
-    right: 10px; /* separación entre líneas derechas */
-    background: linear-gradient(to bottom, #ff0, #f00); /* Amarillo a rojo */
+  right: 10px; /* separación entre líneas derechas */
+  background: linear-gradient(to bottom,  var(--negronotannegro2), var(--azul)); /* Amarillo a rojo */
 }
-
  
- 
-/*.tab-container {
-     display: flex; 
-     border-bottom: 2px solid;
-     background-color: var(--rojo); 
-    }
-.tab { 
-    padding: 10px 20px; cursor: pointer; 
-    border: 1px solid var(--blanco);
-    background-color: var(--azulclaro); 
-}
-.tab.active { 
-    background-color: var(--azulobscuro); 
-    font-weight: bold;
- }*/
-
  .tab-container {
     display: flex;
     justify-content: space-between;
@@ -122,7 +117,7 @@ h1,h2,h3{
   .tab.active {
     background-color: var(--azulobscuro);
     color: var(--blanco);
-    border-top: 4px solid var(--naranja); /* color distinto en activa */
+    border-top: 4px solid var(--verdeclaro); /* color distinto en activa */
     border-left: 2px solid var(--blanco);
     border-right: 2px solid var(--blanco);
   }
@@ -131,7 +126,7 @@ h1,h2,h3{
 .tab-content {
      display: none; 
      padding: 20px; 
-     border: 1px solid var(--naranja); 
+     border: 3px solid var(--azul); 
     }
 .tab-content.active { 
     display: block; 
@@ -139,7 +134,7 @@ h1,h2,h3{
 form { 
     margin-bottom: 20px; 
     padding: 10px; 
-    border: 1px solid var(--naranja); 
+    border: 3px solid var(--azul); 
 }
 .contador { 
     color: #fffefe; margin-top: 10px; 
@@ -147,8 +142,8 @@ form {
 .status-box { 
     padding: 15px; 
     margin: 20px; 
-    border: 2px solid var(--azulobscuro); 
-    background-color: var(--azul);
+    border: 2px solid var(--verdeclaro); 
+    background-color: var(--verdeobscuro);
  }
 .parameter-container { 
     margin-top: 20px; 
@@ -230,9 +225,66 @@ body {
   .image-container img {
     max-width: 70%;
     height: auto;
-    border: 1px solid #ccc;
+    border: 1px solid var(--blanco);
     border-radius: 6px;
     margin-bottom: 15px;
   }
   
   
+
+  /* tabla ex*/
+  .tabla-servos {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: var(--grisobscuro);
+  color: var(--blanco);
+  font-size: 1.4rem;
+}
+
+.tabla-servos th, .tabla-servos td {
+  border: 1px solid var(--blanco);
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.tabla-servos th {
+  background-color: var(--azulobscuro);
+  color: var(--blanco);
+}
+
+.tabla-servos tr:nth-child(even) {
+  background-color: var(--negronotannegro);
+}
+
+.tabla-servos tr:hover {
+  background-color: var(--azulclaro);
+  color: var(--negro);
+}
+
+/*boton ex*/
+.boton-escanear {
+  background-color: var(--azulclaro);
+  border: 2px solid var(--azulobscuro);
+  color: var(--negro);
+  font-size: 1.6rem;
+  font-weight: bold;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.boton-escanear:hover {
+  background-color: var(--azul);
+  transform: scale(1.05);
+}
+
+
+/*imagen fija */
+
+#imagen-fija {
+  max-width: 40%;
+  height: auto;
+  border: none;
+}

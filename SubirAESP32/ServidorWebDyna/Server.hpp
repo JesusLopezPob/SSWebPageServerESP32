@@ -23,10 +23,10 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
 
     Serial.printf("Moviendo el  Servo %s: %s %s\n", servo.c_str(), value.c_str(), type.c_str());
     
-    void moveDxl(int n, String type, int valuePos);
+    void moveDxl(int n, String type, int valuePos, bool simple);
     int n = servo.toInt() - 1;
     int valuePos= value.toInt();
-     moveDxl(n,type,valuePos);
+     moveDxl(n,type,valuePos,1);
 
   
     // Enviar feedback por SSE (usando la función correcta con los parámetros)
@@ -80,13 +80,44 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
       
       
       Serial.printf("Parametro modificados al Servo %s: P: %s I: %s D: %s V: %s A: %s \n", servo.c_str(), P.c_str(), I.c_str(), D.c_str(), V.c_str(), A.c_str());
-//agregar funcion de mover el servomotor
+//agregar funcion de cambiar parametros de mov del servomotor
+      void changeMoveParamet(int n,float Pvalue,float Ivalue,float Dvalue,int Vvalue,int Avalue);
+      int n = servo.toInt() - 1;
+      float Pvalue= P.toFloat();
+      float Ivalue= I.toFloat();
+      float Dvalue= D.toFloat();
+      int Vvalue= V.toInt();
+      int Avalue= A.toInt();
+
+
+      changeMoveParamet(n,Pvalue,Ivalue,Dvalue,Vvalue,Avalue);
 
       events.send(changeMoveParametJSON(servo, P,I,D,V,A).c_str(), ("MoveParam" + servo).c_str(), millis());
       // Aquí podrías guardar el punto en una lista o usarlo como parte de una trayectoria
       request->send(200, "text/plain", "OK");
  });
 
+
+ server.on("/servoParamet", HTTP_GET, [](AsyncWebServerRequest *request){
+      String servo = request->getParam("servo")->value();      
+      String nuevoID  = request->getParam("-")->value();
+      String nuevoBaud = request->getParam("-")->value();
+
+     
+//agregar funcion de cambiar parametros de mov del servomotor
+      void chanceServoParamet(int index, int newBaud, int newID);
+      int n = servo.toInt() - 1;
+      int newID= nuevoID.toInt();
+      int newBaud= nuevoBaud.toInt();
+
+
+      chanceServoParamet(n,newBaud,newID);
+
+      events.send(changeServoParametJSON(servo,nuevoID,nuevoBaud).c_str(), ("ServoParam" + servo).c_str(), millis());
+      // Aquí podrías guardar el punto en una lista o usarlo como parte de una trayectoria
+      request->send(200, "text/plain", "OK");
+      
+ });
 
 server.on("/Start", HTTP_GET, [](AsyncWebServerRequest *request){
 

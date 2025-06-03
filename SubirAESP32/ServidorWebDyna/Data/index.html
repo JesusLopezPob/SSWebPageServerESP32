@@ -157,9 +157,66 @@
     <h2>Configuracion</h2>
 
     <div class='contador'>Puntos almacenados: 0/10 </div>
+    <div class='escaner'>Inicializando escaneo de datos</div>
+
+<!--table ex-->
+<h3>Resumen de Servos</h3>
+<table id="tabla-servos" class="tabla-servos">
+  <thead>
+    <tr>
+      <th>Servo</th>
+      <th>Posición Actual</th>
+      <th>Tipo de Movimiento</th>
+      <th>Parámetros PID (P / I / D)</th>
+      <th>Velocidad</th>
+      <th>Aceleración</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Servo 1</td>
+      <td id="tabla-pos1">--</td>
+      <td id="tabla-tipo1">--</td>
+      <td id="tabla-pid1">--</td>
+      <td id="tabla-vel1">--</td>
+      <td id="tabla-ace1">--</td>
+    </tr>
+    <tr>
+      <td>Servo 2</td>
+      <td id="tabla-pos2">--</td>
+      <td id="tabla-tipo2">--</td>
+      <td id="tabla-pid2">--</td>
+      <td id="tabla-vel2">--</td>
+      <td id="tabla-ace2">--</td>
+    </tr>
+    <tr>
+      <td>Servo 3</td>
+      <td id="tabla-pos3">--</td>
+      <td id="tabla-tipo3">--</td>
+      <td id="tabla-pid3">--</td>
+      <td id="tabla-vel3">--</td>
+      <td id="tabla-ace3">--</td>
+    </tr>
+    <tr>
+      <td>Servo 4</td>
+      <td id="tabla-pos4">--</td>
+      <td id="tabla-tipo4">--</td>
+      <td id="tabla-pid4">--</td>
+      <td id="tabla-vel4">--</td>
+      <td id="tabla-ace4">--</td>
+    </tr>
+  </tbody>
+</table>
+<div style="text-align: center; margin-top: 20px;">
+  <button id="boton-escanear" class="boton-escanear" onclick="escanearValores()"> ESCANEAR</button>
 </div>
 
 
+
+
+</div>
+
+<!-- boton ex-->
     <div style="margin:20px; padding:10px; border:1px solid #555;">
       <button type="button" onclick="executeSequence()">Ejecutar Secuencia Alternada</button>
     </div>
