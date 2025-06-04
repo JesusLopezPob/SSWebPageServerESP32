@@ -1,12 +1,18 @@
 //Libreria de las funciones para  configuracion y control Dynamixel con ESP32
 //derechos reservados ----
 
+#pragma once
+#include <Preferences.h>
+
+extern Preferences prefs;  // Declaración: le dices al compilador que existe en otro lugar
 //funcion para configurar a los servos Dynamixel para un inicio
 void configDXL(){
   
   // Inicializa el puerto serial para Dynamixel
   DXL_SERIAL.begin(DXL_Baud, SERIAL_8N1, RX_PIN, TX_PIN);
   dxl.begin(DXL_Baud);
+
+  
 
       // eliminar la trayectoria y resetear el contadorPunto en caso de reseteo o alguna otra situacion
   for (int i = 0; i < MAX_SERVOS; i++) {
@@ -17,39 +23,67 @@ void configDXL(){
 
     }
   }
+
+    //inicializar las prefs 
+  prefs.begin("my-config", false);  // false = lectura y escritura
+
+  // Verificamos si ya fue inicializado antes
+  bool initialized = prefs.getBool("initialized", false);
+  
   for (int i = 0; i < 4; i++) {
-      // Definir los ID
-      servos[i].id = (i == 0) ? 4 : i; //  { 4, 1, 2, 3}
+    if (!initialized) {
+      // 🟢 PRIMERA VEZ: usar valores por defecto y guardar
+      servos[i].id        = (i == 0) ? 4 : i;
+      servos[i].baudrate  = 1000000;
+      servos[i].protocolo = (i == 1 || i == 2) ? 2.0 : 1.0;
+      servos[i].P         = (i < 3) ? 120 : -1;
+      servos[i].I         = (i < 3) ? 15 : -1;
+      servos[i].D         = (i < 3) ? 1 : -1;
+      servos[i].V         = (i < 3) ? 50 : 30;
+      servos[i].A         = (i < 3) ? 50 : -1;
 
-      // Definir los baudrate
-      servos[i].baudrate = 1000000;
+      // Guardar en memoria no volátil
+      prefs.putUInt(("id" + String(i)).c_str(), servos[i].id);
+      prefs.putUInt(("baud" + String(i)).c_str(), servos[i].baudrate);
+      prefs.putFloat(("prot" + String(i)).c_str(), servos[i].protocolo);
+      prefs.putInt(("P" + String(i)).c_str(), servos[i].P);
+      prefs.putInt(("I" + String(i)).c_str(), servos[i].I);
+      prefs.putInt(("D" + String(i)).c_str(), servos[i].D);
+      prefs.putInt(("V" + String(i)).c_str(), servos[i].V);
+      prefs.putInt(("A" + String(i)).c_str(), servos[i].A);
+    } else {
+      // 🔁 SUBSIGUIENTES VECES: cargar desde memoria
+      servos[i].id        = prefs.getUInt(("id" + String(i)).c_str());
+      servos[i].baudrate  = prefs.getUInt(("baud" + String(i)).c_str());
+      servos[i].protocolo = prefs.getFloat(("prot" + String(i)).c_str());
+      servos[i].P         = prefs.getInt(("P" + String(i)).c_str());
+      servos[i].I         = prefs.getInt(("I" + String(i)).c_str());
+      servos[i].D         = prefs.getInt(("D" + String(i)).c_str());
+      servos[i].V         = prefs.getInt(("V" + String(i)).c_str());
+      servos[i].A         = prefs.getInt(("A" + String(i)).c_str());
+    }
 
-      //definir los protocolos
-      servos[i].protocolo = (i == 1 || i == 2) ? 2.0 : 1.0; // { 1.0, 2.0, 2.0 , 1.0}
-
-      // Definir protocolos (protocolo ya está inicializado en el constructor)
-
-      // Definir PID
-      servos[i].P = (i < 3) ? 120 : -1;   //{ 120, 120, 120 , -1}
-      servos[i].I = (i < 3) ? 15 : -1;    // { 15, 15, 15 , -1}
-      servos[i].D = (i < 3) ? 1 : -1;     // { 1, 1, 1 , -1}
-
-      // Definir V y A
-      servos[i].V = (i < 3) ? 50 : 30;   // { 50, 50, 50 , 30}
-      servos[i].A = (i < 3) ? 50 : -1;    // { 50, 50, 50, -1}
-
-      servos[i].contadorPuntos = 0;
-
-      for (int j = 0; j < 10; j++) {
-          servos[i].puntos[j].valorPosicion = 0;
-          servos[i].puntos[j].tipo.clear();
-      }
+    // Reset de trayectoria y contador
+    servos[i].contadorPuntos = 0;
+    for (int j = 0; j < 10; j++) {
+      servos[i].puntos[j].valorPosicion = 0;
+      servos[i].puntos[j].tipo.clear();
+    }
   }
+
+  // 🟢 Si es la primera vez, marcarlo
+  if (!initialized) {
+    prefs.putBool("initialized", true);
+  }
+
+
   
   
   
   //config para MX106
   dxl.setPortProtocolVersion(1.0f);
+  //dxl.begin(servos[0].baudrate);
+  //DXL_SERIAL.begin(servos[0].baudrate, SERIAL_8N1, RX_PIN, TX_PIN);
 
   uint8_t id_Mx= servos[0].id;
   found=dxl.ping(id_Mx);
@@ -72,8 +106,10 @@ void configDXL(){
         
           
       dxl.torqueOn(id_Mx);
-      Serial.println("Servo MX " + String(id_Mx) + " configurado en posición (Protocolo 1.0). No Modelo:" +       dxl.getModelNumber(id_Mx));
+      int modelNumMX=dxl.getModelNumber(id_Mx);
+      Serial.println("Servo MX " + String(id_Mx) + " configurado en posición (Protocolo 1.0). No Modelo:" + modelNumMX );
       servoActivo[0]=true;
+      servos[0].model_number=modelNumMX;
 
 
 
@@ -87,6 +123,8 @@ void configDXL(){
 
   for  (int i=1; i<=2;i++){
     uint8_t id = servos[i].id;
+    //dxl.begin(servos[i].baudrate);
+    //DXL_SERIAL.begin(servos[i].baudrate, SERIAL_8N1, RX_PIN, TX_PIN);
     found=dxl.ping(id);
     if (!found) {
       Serial.print("Servo con ID ");
@@ -106,8 +144,10 @@ void configDXL(){
         dxl.writeControlTableItem(PROFILE_ACCELERATION, id, servos[i].A);
 
         dxl.torqueOn(id);
-        Serial.println("Servo " + String(id) + " configurado en posición (Protocolo 2.0).");
+        int modelNumXM=dxl.getModelNumber(id);
+        Serial.println("Servo " + String(id) + " configurado en posición (Protocolo 2.0).No Modelo:" +  modelNumXM);
         servoActivo[i]=true;
+        servos[i].model_number=modelNumXM;
 
     }
 
@@ -120,6 +160,8 @@ void configDXL(){
 //==============================configuro para iniciar al AX18 ====================================// 
 
    dxl.setPortProtocolVersion(1.0f);
+   //dxl.begin(servos[3].baudrate);
+   //DXL_SERIAL.begin(servos[3].baudrate, SERIAL_8N1, RX_PIN, TX_PIN);
     if (dxl.ping(servos[3].id)) {
       Serial.println("Dynamixel AX18A encontrado y listo.");
   
@@ -154,7 +196,9 @@ void configDXL(){
       Serial.println("Torque activado");
   
     } else {
-      Serial.println("Error: No se pudo encontrar el Dynamixel.");
+      Serial.print("Servo con ID ");
+      Serial.print(servos[3].id);
+      Serial.println(" no detectado. Se omite configuración.");
       servoActivo[3]=false;
       return;
     }
@@ -162,57 +206,88 @@ void configDXL(){
 
   // Regresar a protocolo 2.0 para servos 1 y 2
   dxl.setPortProtocolVersion(2.0f);
-
-
-  
-
 }
 
 
+void reorderScanDXL(ServoInfo scanDXL[], int count_found, const int modeloOrden[], int ordenSize) {
+  ServoInfo temp[4];   // tamaño fijo a 4 porque tienes MAX_SERVOS = 4
+  int tempCount = 0;
+
+  // Agregar en orden de modeloOrden
+  for (int i = 0; i < ordenSize; i++) {
+    for (int j = 0; j < count_found; j++) {
+      if (scanDXL[j].model_number == modeloOrden[i]) {
+        temp[tempCount++] = scanDXL[j];
+        break;  // pasa al siguiente modeloOrden
+      }
+    }
+  }
+
+  // Agregar los que no están en modeloOrden (opcional)
+  for (int j = 0; j < count_found; j++) {
+    bool encontrado = false;
+    for (int i = 0; i < ordenSize; i++) {
+      if (scanDXL[j].model_number == modeloOrden[i]) {
+        encontrado = true;
+        break;
+      }
+    }
+    if (!encontrado) {
+      temp[tempCount++] = scanDXL[j];
+    }
+  }
+
+  // Copiar resultado a scanDXL
+  for (int i = 0; i < tempCount; i++) {
+    scanDXL[i] = temp[i];
+  }
+}
 //funcion para escanear y devolver una estructura con los servos disponibles
 
 int scanServoDxl() {
-  int baud[13] = {9600,19200, 57600, 115200, 200000,250000, 400000,500000, 1000000, 2000000, 3000000,4000000, 4500000};
   int count_found = 0;
-  int found = 0;
+  
+  // Limpiar arreglo previo
+  for (int i = 0; i < MAX_SERVOS; i++) {
+    scanDXL[i].id = 0;
+    scanDXL[i].protocol = 0;
+    scanDXL[i].baudrate = 0;
+    scanDXL[i].model_number = 0;
+  }
 
   for (int protocol = 1; protocol <= 2; protocol++) {
     dxl.setPortProtocolVersion((float)protocol);
-    Serial.print("Escaneando con protocolo ");
-    Serial.println(protocol);
+    Serial.printf("Escaneando con protocolo %d\n", protocol);
 
     for (int i = 0; i < 13; i++) {
-      Serial.print("Escaneando a baud rate: ");
-      Serial.println(baud[i]);
-      DXL_SERIAL.updateBaudRate(baud[i]);
-      dxl.begin(baud[i]);
-      found = dxl.scan();
-      if (found) {
-        for (int id = 1; id < 253; id++) {
+      uint32_t currentBaud = baud[i];
+      Serial.printf("Escaneando a baud rate: %u\n", currentBaud);
+      
+      // Reiniciar puerto serie con el nuevo baudrate (más seguro que updateBaudRate)
+      DXL_SERIAL.begin(currentBaud, SERIAL_8N1, RX_PIN, TX_PIN);
+      dxl.begin(currentBaud);
+
+      // Escaneo rápido (dependiendo de la librería)
+      // Si dxl.scan() solo devuelve true/false, se debe hacer ping manualmente
+      if (dxl.scan()) {
+        for (int id = 1; id < 253 && count_found < MAX_SERVOS; id++) {
           if (dxl.ping(id)) {
-            // Verificar si ya está registrado
+            // Evitar duplicados
             bool already_found = false;
             for (int j = 0; j < count_found; j++) {
-              if ( scanDXL[j].id == id) {
+              if (scanDXL[j].id == id) {
                 already_found = true;
                 break;
               }
             }
-            if (!already_found && count_found < MAX_SERVOS) {
+            if (!already_found) {
               scanDXL[count_found].id = id;
               scanDXL[count_found].protocol = protocol;
-              scanDXL[count_found].baudrate = baud[i];
-              int Model_number=dxl.getModelNumber(id);
-              scanDXL[count_found].model_number= Model_number;
+              scanDXL[count_found].baudrate = currentBaud;
+              scanDXL[count_found].model_number = dxl.getModelNumber(id);
               count_found++;
-              Serial.print("Dynamixel encontrado - ID: ");
-              Serial.print(id);
-              Serial.print(", Protocolo: ");
-              Serial.print(protocol);
-              Serial.print(", Baudrate: ");
-              Serial.print(baud[i]);
-              Serial.print(", Modelo: ");
-              Serial.println(Model_number);
+              Serial.printf("Dynamixel encontrado - ID: %d, Protocolo: %d, Baudrate: %u, Modelo: %d\n",
+                            id, protocol, currentBaud, scanDXL[count_found - 1].model_number);
             }
           }
         }
@@ -391,6 +466,13 @@ void changeMoveParamet(int index,float Pvalue,float Ivalue,float Dvalue,int Vval
   servos[index].V= Vvalue;
   servos[index].A= Avalue;
 
+    // Guardar en memoria NVS directamente usando prefs global
+  prefs.putFloat(("P" + String(index)).c_str(), Pvalue);
+  prefs.putFloat(("I" + String(index)).c_str(), Ivalue);
+  prefs.putFloat(("D" + String(index)).c_str(), Dvalue);
+  prefs.putInt(("V" + String(index)).c_str(), Vvalue);
+  prefs.putInt(("A" + String(index)).c_str(), Avalue);
+
   // configuracion al servo dynamixel
   dxl.torqueOff(id);
   dxl.setOperatingMode(id, OP_POSITION);
@@ -409,7 +491,6 @@ void changeMoveParamet(int index,float Pvalue,float Ivalue,float Dvalue,int Vval
 
   
 }
-
 
 //funcion con los valores para cambio de baudrate de los modelos de Dynamixel
 uint8_t getBaudValue(int index, int desiredBaud) {
@@ -463,40 +544,41 @@ uint8_t getBaudValue(int index, int desiredBaud) {
 }
 
 
-void chanceServoParamet(int index, int newBaud, int newID){
-  int id = servos[index].id;  // ID del servo
 
+
+void chanceServoParamet(int index, int newBaud, int newID) {
+  int id = servos[index].id;  // ID actual del servo
 
   if (dxl.ping(id)) {
-    
     Serial.println("Servo detectado correctamente.");
-    // Selección de dirección según si respondió al ping y el índice
-    uint8_t direccionID = (dxl.ping(id) && (index == 1 || index == 2)) ? 0x07 : 0x03;
 
+    uint8_t direccionID = (index == 1 || index == 2) ? 0x07 : 0x03;
 
-    // Intentar cambiar el ID
+    // Cambiar el ID
     if (dxl.write(id, direccionID, (uint8_t*)&newID, 1, 100)) {
       Serial.println("ID cambiado correctamente.");
       servos[index].id = newID;
+
+      // Guardar nuevo ID en NVS
+      prefs.putUInt(("id" + String(index)).c_str(), newID);
     } else {
       Serial.println("Error al cambiar el ID.");
     }
-    
-    uint8_t direccionBaud = (dxl.ping(servos[index].id) && (index == 1 || index == 2)) ? 0x08 : 0x04;
+
+    uint8_t direccionBaud = (index == 1 || index == 2) ? 0x08 : 0x04;
     uint8_t baudValue = getBaudValue(index, newBaud);    
 
-     if (dxl.write(servos[index].id, direccionBaud, (uint8_t*)&baudValue, 1, 100)) {
+    if (dxl.write(servos[index].id, direccionBaud, (uint8_t*)&baudValue, 1, 100)) {
       Serial.println("Baudrate cambiado correctamente.");
       servos[index].baudrate = newBaud;
+
+      // Guardar nuevo baudrate en NVS
+      prefs.putUInt(("baud" + String(index)).c_str(), newBaud);
     } else {
       Serial.println("Error al cambiar el baudrate.");
     }
-       
-    }else{
-      Serial.println("Servo no encontrado.");
-    }
-    
 
-
-  
+  } else {
+    Serial.println("Servo no encontrado.");
+  }
 }

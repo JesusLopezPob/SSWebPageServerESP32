@@ -124,6 +124,8 @@ struct ServoInfo {
   int model_number;
 };
 
+int baud[13] = {9600,19200, 57600, 115200, 200000,250000, 400000,500000, 1000000, 2000000, 3000000,4000000, 4500000};
+  int modeloOrden[MAX_SERVOS] = {1050, 1020, 1060, 1080};
 
 // variables de secuencia
 
@@ -147,11 +149,14 @@ struct ServoConfig {
     int V, A;             // Velocidad y aceleración
     Punto puntos[10];     // Array para almacenar hasta 10 puntos
     int contadorPuntos;   // Número actual de puntos guardados
+    int model_number;
 };
 
   ServoConfig servos[4];
 
-//
+
+
+//memoria preferencias ID y Baud
 
 
 

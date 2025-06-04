@@ -288,3 +288,26 @@ body {
   height: auto;
   border: none;
 }
+
+
+ /*botones */
+ .button {
+  background-color: var(--azulclaro);
+  border: 2px solid var(--azulobscuro);
+  color: var(--negro);
+  font-size: 1.6rem;
+  font-weight: bold;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  text-align: left;
+  margin-top: 20px;
+}
+
+.button:hover {
+  background-color: var(--azul);
+  transform: scale(1.05);
+}
+
+ 

@@ -138,6 +138,9 @@ if (!!window.EventSource) {
     
     // Si quieres mostrar feedback visual:
     //document.getElementById(`status_servo${servo}`).innerText = `Enviado: ${value} ${type}`;
+        //tabla ex
+    document.getElementById(`tabla-pos${servo}`).textContent = value;
+    document.getElementById(`tabla-tipo${servo}`).textContent = type;
 
   }
   
@@ -232,14 +235,17 @@ function medirLatenciaHTTP() {
 }
 
 // boton ex
+// tabla 
   function escanearValores() {
   for (let servo = 1; servo <= 4; servo++) {
     const tabContent = document.getElementById(`pestana${servo}`);
-    
-    const inputValue = tabContent.querySelector("input[name='value']")?.value || "--";
-    const inputType = tabContent.querySelector("input[name='type']:checked")?.value || "--";
-    document.getElementById(`tabla-pos${servo}`).textContent = inputValue;
-    document.getElementById(`tabla-tipo${servo}`).textContent = inputType;
+
+    const inputId = tabContent.querySelector(`#id-servo${servo}`)?.value || "--";
+    const baudSelect = tabContent.querySelector(`#baud-servo${servo}`);
+    const baudRate = baudSelect ? baudSelect.options[baudSelect.selectedIndex].value : "--";
+
+    document.getElementById(`tabla-id${servo}`).textContent = inputId;
+    document.getElementById(`tabla-baud${servo}`).textContent = baudRate;
 
     const inputP = tabContent.querySelector("input[name='p']")?.value || "--";
     const inputI = tabContent.querySelector("input[name='i']")?.value || "--";
@@ -265,3 +271,30 @@ function medirLatenciaHTTP() {
     document.getElementById('estado-ejecucion').textContent = status;
     document.getElementById('paso-actual').textContent = step;
   }, 1000);
+
+
+  function guardarID(servo) {
+  const tab = document.getElementById('pestana${servo}');
+  const idInput = tab.querySelector('#id-servo${servo}');
+  const id = idInput?.value.trim();
+
+  if (id === "" || isNaN(id)) {
+    alert(" Ingrese un ID válido.");
+    idInput.focus();
+    return;
+  }
+
+  document.getElementById('tabla-id${servo}').textContent = id;
+  alert(` ID guardado para Servo ${servo}: ${id}`);
+  console.log(` ID guardado → Servo ${servo} | ID: ${id}`);
+}
+
+function guardarBaud(servo) {
+  const tab = document.getElementById('pestana${servo}');
+  const baudSelect = tab.querySelector('#baud-servo${servo}');
+  const baud = baudSelect?.value;
+
+  document.getElementById('tabla-baud${servo}').textContent = baud;
+  alert(` Baud Rate guardado para Servo ${servo}: ${baud}`);
+  console.log(` Baud guardado → Servo ${servo} | Baud: ${baud}`);
+}

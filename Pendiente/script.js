@@ -228,16 +228,18 @@ if (!!window.EventSource) {
     document.getElementById('estado-ejecucion').textContent = status;
     document.getElementById('paso-actual').textContent = step;
   }, 1000);
-
-// boton ex
+ 
+// tabla 
   function escanearValores() {
   for (let servo = 1; servo <= 4; servo++) {
     const tabContent = document.getElementById(`pestana${servo}`);
-    
-    const inputValue = tabContent.querySelector("input[name='value']")?.value || "--";
-    const inputType = tabContent.querySelector("input[name='type']:checked")?.value || "--";
-    document.getElementById(`tabla-pos${servo}`).textContent = inputValue;
-    document.getElementById(`tabla-tipo${servo}`).textContent = inputType;
+
+    const inputId = tabContent.querySelector(`#id-servo${servo}`)?.value || "--";
+    const baudSelect = tabContent.querySelector(`#baud-servo${servo}`);
+    const baudRate = baudSelect ? baudSelect.options[baudSelect.selectedIndex].value : "--";
+
+    document.getElementById(`tabla-id${servo}`).textContent = inputId;
+    document.getElementById(`tabla-baud${servo}`).textContent = baudRate;
 
     const inputP = tabContent.querySelector("input[name='p']")?.value || "--";
     const inputI = tabContent.querySelector("input[name='i']")?.value || "--";

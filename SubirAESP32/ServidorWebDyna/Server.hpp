@@ -139,7 +139,10 @@ server.on("/Scan", HTTP_GET, [](AsyncWebServerRequest *request){
 
     Serial.printf(" Escaneando Servos...\n");
     int scanServoDxl();  // prototipo
+    void reorderScanDXL(ServoInfo scanDXL[], int count_found, const int modeloOrden[], int ordenSize);//prototipo
+
     int countServos =scanServoDxl();
+    reorderScanDXL(scanDXL, countServos, modeloOrden, MAX_SERVOS);
   
     // Enviar feedback por SSE (usando la función correcta con los parámetros)
     events.send( scanResultsJSON(scanDXL, countServos).c_str(), "SCAN" , millis());

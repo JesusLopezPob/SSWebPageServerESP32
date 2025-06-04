@@ -60,10 +60,43 @@
           <label>Aceleración: <input type='number' name='a' value='50' min='0' max='1023' required></label><br>
           <button type="button"  class="button"   id="paratM1" onclick="submitMoveParame(1)">Cambiar Parámetros</button>
         </form>
-
               </div>
+
+              <div class="parameter-container">
+  <h3>ID</h3>
+  <form>
+    <label for="id-servo1">Ingrese ID:</label><br>
+    <input type="number" id="id-servo1" name="id-servo1" placeholder="Ej. 1" min="0" style="width: 100%; padding: 5px; font-size: 14px;">
+    <button type="button" class="button" onclick="guardarID(1)">Guardar ID</button>
+  </form>
+</div>
+
+
+  <div class="parameter-container">
+  <h3>Baud Rate</h3>
+  <form>
+    <label for="baud-servo1">Seleccione velocidad:</label><br>
+    <select id="baud-servo1" name="baud-servo1" style="width: 100%; padding: 5px; font-size: 14px;">
+      <option value="2M">2M</option>
+      <option value="1M">1M</option>
+      <option value="500000">500,000</option>
+      <option value="400000">400,000</option>
+      <option value="250000">250,000</option>
+      <option value="200000">200,000</option>
+      <option value="115200">115,200</option>
+      <option value="57600">57,600</option>
+      <option value="19200">19,200</option>
+      <option value="9600">9,600</option>
+    </select> 
+    <button type="button" class="button" onclick="guardarBaud(1)">Guardar Baud Rate</button>
+  </form>
+</div>
+ 
+
+              
       <div class='contador'>Puntos almacenados: 0/10</div>
     </div>
+
     <div id='pestana2' class='tab-content'>
       <h2>Servo 2</h2>
       <h3>Movimiento Inmediato</h3>
@@ -95,8 +128,39 @@
           <button type="button" class="button" id="paratM2" onclick="submitMoveParame(2)">Cambiar Parámetros</button>
         </form>
       </div>
-      <div class='contador'>Puntos almacenados: 0/10</div>
+      
+              <div class="parameter-container">
+  <h3>ID</h3>
+  <form>
+    <label for="id-servo2">Ingrese ID:</label><br>
+    <input type="number" id="id-servo2" name="id-servo2" placeholder="Ej. 1" min="0" style="width: 100%; padding: 5px; font-size: 14px;">
+    <button type="button" class="button" onclick="guardarID(2)">Guardar ID</button>
+  </form>
+</div>
+
+
+  <div class="parameter-container">
+  <h3>Baud Rate</h3>
+  <form>
+    <label for="baud-servo2">Seleccione velocidad:</label><br>
+    <select id="baud-servo2" name="baud-servo2" style="width: 100%; padding: 5px; font-size: 14px;">
+      <option value="45M">4.5M</option>
+      <option value="4M">4M</option>
+      <option value="3M">3M</option>
+      <option value="2M">2M</option>
+      <option value="1M">1M</option>
+      <option value="115200">115,200</option>
+      <option value="57600">57,600</option> 
+      <option value="9600">9,600</option>
+    </select>
+    <button type="button" class="button" onclick="guardarBaud(2)">Guardar Baud Rate</button>
+  </form>
+</div>
+
+
+ <div class='contador'>Puntos almacenados: 0/10</div>
     </div>
+
     <div id='pestana3' class='tab-content'>
       <h2>Servo 3</h2>
       <h3>Movimiento Inmediato</h3>
@@ -128,6 +192,36 @@
           <button type="button" class="button" id="paratm3" onclick="submitMoveParame(3)">Cambiar Parámetros</button>
         </form>
       </div>
+
+      
+              <div class="parameter-container">
+  <h3>ID</h3>
+  <form>
+    <label for="id-servo3">Ingrese ID:</label><br>
+    <input type="number" id="id-servo3" name="id-servo3" placeholder="Ej. 1" min="0" style="width: 100%; padding: 5px; font-size: 14px;">
+ <button type="button" class="button" onclick="guardarID(3)">Guardar ID</button>
+  </form>
+</div>
+
+
+  <div class="parameter-container">
+  <h3>Baud Rate</h3>
+  <form>
+    <label for="baud-servo3">Seleccione velocidad:</label><br>
+    <select id="baud-servo3" name="baud-servo3" style="width: 100%; padding: 5px; font-size: 14px;">
+      <option value="45M">4.5M</option>
+      <option value="4M">4M</option>
+      <option value="3M">3M</option>
+      <option value="2M">2M</option>
+      <option value="1M">1M</option>
+      <option value="115200">115,200</option>
+      <option value="57600">57,600</option> 
+      <option value="9600">9,600</option>
+    </select>
+    <button type="button" class="button" onclick="guardarBaud(3)">Guardar Baud Rate</button>
+  </form>
+</div>
+
       <div class='contador'>Puntos almacenados: 0/10</div>
     
     </div> 
@@ -150,6 +244,35 @@
         <input type='radio' name='Type' value='angle'> Ángulo<br>
         <button type="button" class="button" id="mov4" onclick="addPoint(4)">Punto Agregado</button>
       </form>
+      
+              <div class="parameter-container">
+  <h3>ID</h3>
+  <form>
+    <label for="id-servo4">Ingrese ID:</label><br>
+    <input type="number" id="id-servo4" name="id-servo4" placeholder="Ej. 1" min="0" style="width: 100%; padding: 5px; font-size: 14px;">
+     <button type="button" class="button" onclick="guardarID(4)">Guardar ID</button>
+  </form>
+</div>
+
+
+  <div class="parameter-container">
+  <h3>Baud Rate</h3>
+  <form>
+    <label for="baud-servo4">Seleccione velocidad:</label><br>
+    <select id="baud-servo4" name="baud-servo4" style="width: 100%; padding: 5px; font-size: 14px;">
+      <option value="1M">1M</option>
+      <option value="500000">500,000</option>
+      <option value="400000">400,000</option>
+      <option value="250000">250,000</option>
+      <option value="200000">200,000</option>
+      <option value="115200">115,200</option>
+      <option value="57600">57,600</option> 
+      <option value="19200">19,200</option>
+      <option value="9600">9,600</option>
+    </select>
+    <button type="button" class="button" onclick="guardarBaud(4)">Guardar Baud Rate</button>
+  </form>
+</div>
       <div class='contador'>Puntos almacenados: 0/10</div>
     </div>
 
@@ -159,14 +282,14 @@
     <div class='contador'>Puntos almacenados: 0/10 </div>
     <div class='escaner'>Inicializando escaneo de datos</div>
 
-<!--table ex-->
+ <!--tabla  -->
 <h3>Resumen de Servos</h3>
 <table id="tabla-servos" class="tabla-servos">
   <thead>
     <tr>
       <th>Servo</th>
-      <th>Posición Actual</th>
-      <th>Tipo de Movimiento</th>
+      <th>ID</th>
+      <th>Baud Rate</th>
       <th>Parámetros PID (P / I / D)</th>
       <th>Velocidad</th>
       <th>Aceleración</th>
@@ -175,38 +298,40 @@
   <tbody>
     <tr>
       <td>Servo 1</td>
-      <td id="tabla-pos1">--</td>
-      <td id="tabla-tipo1">--</td>
+      <td id="tabla-id1">--</td>
+      <td id="tabla-baud1">--</td>
       <td id="tabla-pid1">--</td>
       <td id="tabla-vel1">--</td>
       <td id="tabla-ace1">--</td>
     </tr>
     <tr>
       <td>Servo 2</td>
-      <td id="tabla-pos2">--</td>
-      <td id="tabla-tipo2">--</td>
+      <td id="tabla-id2">--</td>
+      <td id="tabla-baud2">--</td>
       <td id="tabla-pid2">--</td>
       <td id="tabla-vel2">--</td>
       <td id="tabla-ace2">--</td>
     </tr>
     <tr>
       <td>Servo 3</td>
-      <td id="tabla-pos3">--</td>
-      <td id="tabla-tipo3">--</td>
+      <td id="tabla-id3">--</td>
+      <td id="tabla-baud3">--</td>
       <td id="tabla-pid3">--</td>
       <td id="tabla-vel3">--</td>
       <td id="tabla-ace3">--</td>
     </tr>
     <tr>
       <td>Servo 4</td>
-      <td id="tabla-pos4">--</td>
-      <td id="tabla-tipo4">--</td>
+      <td id="tabla-id4">--</td>
+      <td id="tabla-baud4">--</td>
       <td id="tabla-pid4">--</td>
       <td id="tabla-vel4">--</td>
       <td id="tabla-ace4">--</td>
     </tr>
   </tbody>
 </table>
+
+
 <div style="text-align: center; margin-top: 20px;">
   <button id="boton-escanear" class="boton-escanear" onclick="escanearValores()"> ESCANEAR</button>
 </div>
@@ -221,41 +346,6 @@
       <button type="button" onclick="executeSequence()">Ejecutar Secuencia Alternada</button>
     </div>
 
-
-
-
-
-
-
-<!--
-    <script>
-      function openTab(evt, tabName) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
-        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-        document.getElementById(tabName).style.display = 'block';
-        evt.currentTarget.classList.add('active');
-      }
-      function submitForm(servo) {
-        alert('Movimiento enviado al Servo ' + servo);
-      }
-      function submitTrayectoria(servo) {
-        alert('Parámetros cambiados para el Servo ' + servo);
-      }
-      function addPoint(servo) {
-        alert('Punto agregado para el Servo ' + servo);
-      }
-      function executeSequence() {
-        alert('Ejecutando secuencia alternada...');
-      }
-      setInterval(() => {
-        const status = "Listo";
-        const step = 0;
-        document.getElementById('estado-ejecucion').textContent = status;
-        document.getElementById('paso-actual').textContent = step;
-      }, 1000);
-    </script>
-    
--->
 
 
 

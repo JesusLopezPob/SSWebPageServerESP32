@@ -17,6 +17,11 @@
 #include "DxlConfig.hpp"
 #include <nvs_flash.h>
 
+#include <Preferences.h>
+
+Preferences prefs;
+
+
 void setup() {
   // put your setup code here, to run once:
   //iniciar Serial
