@@ -97,7 +97,7 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
       request->send(200, "text/plain", "OK");
  });
 
-
+/*
  server.on("/servoParamet", HTTP_GET, [](AsyncWebServerRequest *request){
       String servo = request->getParam("servo")->value();      
       String nuevoID  = request->getParam("-")->value();
@@ -118,6 +118,37 @@ server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
       request->send(200, "text/plain", "OK");
       
  });
+*/
+ server.on("/IDChance", HTTP_GET, [](AsyncWebServerRequest *request){
+  String servo = request->getParam("servo")->value();      
+  String nuevoID  = request->getParam("id")->value();  // Usa nombre claro
+  void chanceServoParamet(int index, int newBaud, int newID);
+  int n = servo.toInt() - 1;
+  int newID = nuevoID.toInt();
+  int newBaud = -1; // No se cambia
+  String nuevoBaud=String(newBaud);
+
+  chanceServoParamet(n, newBaud, newID);
+
+  events.send(changeServoParametJSON(servo,nuevoID,nuevoBaud).c_str(), ("ServoParam" + servo).c_str(), millis());
+  request->send(200, "text/plain", "ID actualizado");
+});
+
+
+server.on("/BaudChance", HTTP_GET, [](AsyncWebServerRequest *request){
+  String servo = request->getParam("servo")->value();      
+  String nuevoBaud  = request->getParam("baud")->value();  // Usa nombre claro
+  void chanceServoParamet(int index, int newBaud, int newID);
+  int n = servo.toInt() - 1;
+  int newBaud = nuevoBaud.toInt();
+  int newID = -1; // No se cambia
+  String nuevoID= String(newID);
+
+  chanceServoParamet(n, newBaud, newID);
+
+  events.send(changeServoParametJSON(servo,nuevoID,nuevoBaud).c_str(), ("ServoParam" + servo).c_str(), millis());
+  request->send(200, "text/plain", "Baudrate actualizado");
+});
 
 server.on("/Start", HTTP_GET, [](AsyncWebServerRequest *request){
 
@@ -140,14 +171,11 @@ server.on("/Scan", HTTP_GET, [](AsyncWebServerRequest *request){
     Serial.printf(" Escaneando Servos...\n");
     int scanServoDxl();  // prototipo
     void reorderScanDXL(ServoInfo scanDXL[], int count_found, const int modeloOrden[], int ordenSize);//prototipo
+    void SCANFlag();
+    SCANFlag();
+    
 
-    int countServos =scanServoDxl();
-    reorderScanDXL(scanDXL, countServos, modeloOrden, MAX_SERVOS);
-  
-    // Enviar feedback por SSE (usando la función correcta con los parámetros)
-    events.send( scanResultsJSON(scanDXL, countServos).c_str(), "SCAN" , millis());
-  
-    request->send(200, "text/plain", "OK");  // Enviar respuesta
+
 });
 
 

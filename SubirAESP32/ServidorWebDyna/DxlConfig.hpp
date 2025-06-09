@@ -297,6 +297,10 @@ int scanServoDxl() {
   return count_found;
 }
 
+
+void SCANFlag(){
+  scanMode=true;
+}
   
    
 //funcion para mover individualmente un servo
@@ -414,6 +418,8 @@ void moveDxl(int index, String type, int valuePos, bool simple) {
       moveSimple=true;
       IDSimple=id;
       typeSimple=type;
+      baudSimple=servos[index].baudrate;
+      protSimple=servos[index].protocolo;
       posSimple=valuePos;
     }
 
@@ -544,41 +550,41 @@ uint8_t getBaudValue(int index, int desiredBaud) {
 }
 
 
-
-
 void chanceServoParamet(int index, int newBaud, int newID) {
   int id = servos[index].id;  // ID actual del servo
-
+  Serial.println(id);
+  Serial.println(servos[index].id);  
+  int prueba=prefs.getUInt(("id" + String(index)).c_str());
+  Serial.println(prueba);  
+  
   if (dxl.ping(id)) {
-    Serial.println("Servo detectado correctamente.");
+    Serial.println("✅  Servo detectado correctamente.");
 
-    uint8_t direccionID = (index == 1 || index == 2) ? 0x07 : 0x03;
+    if (newID != -1) {
+      uint8_t direccionID = (index == 1 || index == 2) ? 0x07 : 0x03;
 
-    // Cambiar el ID
-    if (dxl.write(id, direccionID, (uint8_t*)&newID, 1, 100)) {
-      Serial.println("ID cambiado correctamente.");
-      servos[index].id = newID;
-
-      // Guardar nuevo ID en NVS
-      prefs.putUInt(("id" + String(index)).c_str(), newID);
-    } else {
-      Serial.println("Error al cambiar el ID.");
+      if (dxl.write(id, direccionID, (uint8_t*)&newID, 1, 100)) {
+        Serial.println("ID cambiado correctamente.");
+        servos[index].id = newID;
+        prefs.putUInt(("id" + String(index)).c_str(), newID);
+      } else {
+        Serial.println("Error al cambiar el ID.");
+      }
     }
 
-    uint8_t direccionBaud = (index == 1 || index == 2) ? 0x08 : 0x04;
-    uint8_t baudValue = getBaudValue(index, newBaud);    
+    if (newBaud != -1) {
+      uint8_t direccionBaud = (index == 1 || index == 2) ? 0x08 : 0x04;
+      uint8_t baudValue = getBaudValue(index, newBaud);
 
-    if (dxl.write(servos[index].id, direccionBaud, (uint8_t*)&baudValue, 1, 100)) {
-      Serial.println("Baudrate cambiado correctamente.");
-      servos[index].baudrate = newBaud;
-
-      // Guardar nuevo baudrate en NVS
-      prefs.putUInt(("baud" + String(index)).c_str(), newBaud);
-    } else {
-      Serial.println("Error al cambiar el baudrate.");
+      if (dxl.write(servos[index].id, direccionBaud, (uint8_t*)&baudValue, 1, 100)) {
+        Serial.println("Baudrate cambiado correctamente.");
+        servos[index].baudrate = newBaud;
+        prefs.putUInt(("baud" + String(index)).c_str(), newBaud);
+      } else {
+        Serial.println("Error al cambiar el baudrate.");
+      }
     }
-
   } else {
-    Serial.println("Servo no encontrado.");
+    Serial.println("❌ Servo no encontrado.");
   }
 }

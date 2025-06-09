@@ -59,6 +59,8 @@ void loop() {
   // put your main code here, to run repeatedly:
   
 if (ejecutandoSecuencia) {
+
+  //iniciar secuencia
     if (!puntoEnEjecucion) {
       // Saltar servos inactivos o sin puntos en este índice
       while (currentServo < MAX_SERVOS && 
@@ -94,6 +96,7 @@ if (ejecutandoSecuencia) {
         // Enviar comando para mover servo actual
         int val = servos[currentServo].puntos[currentPoint].valorPosicion;
         String typ = servos[currentServo].puntos[currentPoint].tipo;
+        int currentBaud=servos[currentServo].baudrate;
 
         Serial.print("moviendo servo ");
         Serial.print(currentServo);
@@ -103,6 +106,10 @@ if (ejecutandoSecuencia) {
         Serial.println(typ);
         
         //dxl.setPortProtocolVersion(servos[currentServo]. protocolo);
+        
+        DXL_SERIAL.begin(currentBaud, SERIAL_8N1, RX_PIN, TX_PIN);
+        dxl.begin(currentBaud);
+        
         moveDxl(currentServo, typ, val,0);
         puntoEnEjecucion = true;
       }
@@ -173,9 +180,12 @@ if (ejecutandoSecuencia) {
     }
   }
 
-
+//iniciar movimiento individual
 if (moveSimple) {
-
+  
+    DXL_SERIAL.begin(baudSimple, SERIAL_8N1, RX_PIN, TX_PIN);
+    dxl.begin(baudSimple);
+    dxl.setPortProtocolVersion(protSimple);
     int id=IDSimple;
     if (typeSimple=="angle"){
       int currentPos = dxl.getPresentPosition(id,UNIT_DEGREE);
@@ -217,9 +227,17 @@ if (moveSimple) {
 
 
 
+//iniciar escaneo
 
-
-
+if (scanMode){
+    int countServos =scanServoDxl();
+    reorderScanDXL(scanDXL, countServos, modeloOrden, MAX_SERVOS); 
+    events.send( scanResultsJSON(scanDXL, countServos).c_str(), "SCAN" , millis());
+  
+    //request->send(200, "text/plain", "OK");  // Enviar respuesta
+    scanMode=false;
+    
+}
 
 
 

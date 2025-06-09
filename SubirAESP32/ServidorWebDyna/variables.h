@@ -125,7 +125,7 @@ struct ServoInfo {
 };
 
 int baud[13] = {9600,19200, 57600, 115200, 200000,250000, 400000,500000, 1000000, 2000000, 3000000,4000000, 4500000};
-  int modeloOrden[MAX_SERVOS] = {1050, 1020, 1060, 1080};
+  int modeloOrden[MAX_SERVOS] = {320, 1030, 1060, 1080};
 
 // variables de secuencia
 
@@ -192,11 +192,15 @@ bool moveSimple=false;
 int IDSimple=0;
 String typeSimple="";
 float posSimple=0.0;
+int baudSimple=0;
+float protSimple=1.0;
 
 float actualProt =1.0f;
 bool changeProt=false;
 
 bool found=false;
+
+bool scanMode=false;
 
 
 bool check=true;

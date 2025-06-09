@@ -40,22 +40,57 @@ if (!!window.EventSource) {
         document.getElementById(`status_servo${i}`).innerText = `Posición: ${obj.value}`;
       }, false);
     }   
+
+        for (let i = 1; i <= 3; i++) {
+      source.addEventListener(`ServoParam${i}`, function(e) {
+        console.log(`Parametros cambiados  al servo  ${i}:`, obj);
+        var obj = JSON.parse(e.data);
+        document.getElementById(`status_servo${i}`).innerText = `Posición: ${obj.value}`;
+      }, false);
+    }  
     
     source.addEventListener(`startSeq`, function(e) {
       console.log(`Se inicia la secuencia:`, obj);
       var obj = JSON.parse(e.data);
       document.getElementById(`status_servo${i}`).innerText = `Posición: ${obj.value}`;
     }, false);
+  
 
-    source.addEventListener(`latencia`, function(e) {
+  source.addEventListener(`latencia`, function(e) {
       console.log(" Trigger de ping recibido");
       medirLatenciaHTTP();
     },false);
 
+    source.addEventListener(`SCAN`, function(e) {
+  const servos = JSON.parse(e.data);  // Datos recibidos del servidor
+  console.log("Se obtuvo con éxito la info del escaneo:", servos);
 
+  servos.forEach((servo, index) => {
+    const num = index + 1;
 
-  }
+    // Verifica si hay suficientes celdas/filas para este servo
+    const idCell    = document.getElementById(`tabla-id${num}`);
+    const baudCell  = document.getElementById(`tabla-baud${num}`);
+    const pidCell   = document.getElementById(`tabla-pid${num}`);
+    const velCell   = document.getElementById(`tabla-vel${num}`);
+    const aceCell   = document.getElementById(`tabla-ace${num}`);
+
+    if (idCell)    idCell.textContent = servo.id ?? "--";
+    if (baudCell)  baudCell.textContent = servo.baudrate ?? "--";
+
+    // Si no tienes datos de PID o velocidad/aceleración en el escaneo, puedes poner placeholders
+    if (pidCell)   pidCell.textContent = "-- / -- / --";  // o si luego añades PID, usa: `${servo.p} / ${servo.i} / ${servo.d}`
+    if (velCell)   velCell.textContent = "--";  // Podrías usar servo.vel si lo incluyes
+    if (aceCell)   aceCell.textContent = "--";  // Podrías usar servo.accel si lo incluyes
+  });
+
+  alert("Datos actualizados correctamente en la tabla.");
+}, false);
   
+
+
+    } 
+
   
   // Envío por presión del botón
   function toggleBoton(element){
@@ -132,15 +167,21 @@ if (!!window.EventSource) {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", `/move?servo=${servo}&type=${type}&value=${value}`, true);
     xhr.send();
-  
+    
     alert('✅ Movimiento enviado al Servo ' + servo + ' con ' + value + ' ' + type);
     console.log(`✅ Movimiento enviado al Servo ${servo}: ${value} (${type})`);
     
+
+
+    //tabla ex
+    document.getElementById(`tabla-pos${servo}`).textContent = value;
+  document.getElementById(`tabla-tipo${servo}`).textContent = type;
+
+
+ 
+
     // Si quieres mostrar feedback visual:
     //document.getElementById(`status_servo${servo}`).innerText = `Enviado: ${value} ${type}`;
-        //tabla ex
-    document.getElementById(`tabla-pos${servo}`).textContent = value;
-    document.getElementById(`tabla-tipo${servo}`).textContent = type;
 
   }
   
@@ -198,6 +239,12 @@ if (!!window.EventSource) {
     xhr.open("GET", `/moveParamet?servo=${servo}&p=${valueP}&i=${valueI}&d=${valueD}&v=${valueV}&a=${valueA}`, true);
     xhr.send();
 
+    //tabla ex
+ document.getElementById(`tabla-pid${servo}`).textContent = `${valueP} / ${valueI} / ${valueD}`;
+  document.getElementById(`tabla-vel${servo}`).textContent = valueV;
+  document.getElementById(`tabla-ace${servo}`).textContent = valueA;
+
+
     alert(' ✅ Parametros cambiados al servo ' + servo + ' con  P:' + valueP + ' I:' + valueI + ' D:' + valueD + ' V:' + valueV + ' A:' + valueA);
 
  }
@@ -211,9 +258,67 @@ if (!!window.EventSource) {
     alert('✅ Ejecutando secuencia alternada...');
     console.log(`✅ Ejecutando secuencia alternada...)`);
     
+
+    
+  }
+  
+
+  
+  // Actualizar estado cada segundo
+  setInterval(() => {
+    // Simulación de estado
+    const status = "Listo";
+    const step = 0;
+    document.getElementById('estado-ejecucion').textContent = status;
+    document.getElementById('paso-actual').textContent = step;
+  }, 1000);
+ 
+// tabla 
+  function escanearValores() {
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/Scan?`, true);
+    xhr.send();
+
+    alert('✅ Iniciando escaneo ...');
+    console.log(`✅ Iniciando escaneo ...)`);
+} 
+
+
+function guardarID(servo) {
+  const tab = document.getElementById(`pestana${servo}`);
+  const idInput = tab.querySelector(`#id-servo${servo}`);
+  const id = idInput?.value.trim();
+
+  if (id === "" || isNaN(id)) {
+    alert(" Ingrese un ID válido.");
+    idInput.focus();
+    return;
   }
 
-function medirLatenciaHTTP() {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/IDChance?servo=${servo}&id=${id}`, true);
+    xhr.send();
+
+  document.getElementById(`tabla-id${servo}`).textContent = id;
+  alert(` ID guardado para Servo ${servo}: ${id}`);
+  console.log(` ID guardado → Servo ${servo} | ID: ${id}`);
+}
+
+function guardarBaud(servo) {
+  const tab = document.getElementById(`pestana${servo}`);
+  const baudSelect = tab.querySelector(`#baud-servo${servo}`);
+  const baud = baudSelect?.value;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/BaudChance?servo=${servo}&baud=${baud}`, true);
+    xhr.send();
+
+  document.getElementById(`tabla-baud${servo}`).textContent = baud;
+  alert(` Baud Rate guardado para Servo ${servo}: ${baud}`);
+  console.log(` Baud guardado → Servo ${servo} | Baud: ${baud}`);
+}
+ /*function medirLatenciaHTTP() {
   const inicio = performance.now(); // Marca el inicio
 
   fetch('/pingtest') // El ESP32 debe responder rápido a esta ruta
@@ -232,69 +337,4 @@ function medirLatenciaHTTP() {
       console.error("❌ Error al medir latencia:", error);
       //document.getElementById('latencia').innerText = `Error al medir latencia`;
     });
-}
-
-// boton ex
-// tabla 
-  function escanearValores() {
-  for (let servo = 1; servo <= 4; servo++) {
-    const tabContent = document.getElementById(`pestana${servo}`);
-
-    const inputId = tabContent.querySelector(`#id-servo${servo}`)?.value || "--";
-    const baudSelect = tabContent.querySelector(`#baud-servo${servo}`);
-    const baudRate = baudSelect ? baudSelect.options[baudSelect.selectedIndex].value : "--";
-
-    document.getElementById(`tabla-id${servo}`).textContent = inputId;
-    document.getElementById(`tabla-baud${servo}`).textContent = baudRate;
-
-    const inputP = tabContent.querySelector("input[name='p']")?.value || "--";
-    const inputI = tabContent.querySelector("input[name='i']")?.value || "--";
-    const inputD = tabContent.querySelector("input[name='d']")?.value || "--";
-    document.getElementById(`tabla-pid${servo}`).textContent = `${inputP} / ${inputI} / ${inputD}`;
-
-    const inputV = tabContent.querySelector("input[name='v']")?.value || "--";
-    const inputA = tabContent.querySelector("input[name='a']")?.value || "--";
-    document.getElementById(`tabla-vel${servo}`).textContent = inputV;
-    document.getElementById(`tabla-ace${servo}`).textContent = inputA;
-  }
-
-  alert(" Datos actualizados correctamente en la tabla.");
-}
-
-
-  
-  // Actualizar estado cada segundo
-  setInterval(() => {
-    // Simulación de estado
-    const status = "Listo";
-    const step = 0;
-    document.getElementById('estado-ejecucion').textContent = status;
-    document.getElementById('paso-actual').textContent = step;
-  }, 1000);
-
-
-  function guardarID(servo) {
-  const tab = document.getElementById('pestana${servo}');
-  const idInput = tab.querySelector('#id-servo${servo}');
-  const id = idInput?.value.trim();
-
-  if (id === "" || isNaN(id)) {
-    alert(" Ingrese un ID válido.");
-    idInput.focus();
-    return;
-  }
-
-  document.getElementById('tabla-id${servo}').textContent = id;
-  alert(` ID guardado para Servo ${servo}: ${id}`);
-  console.log(` ID guardado → Servo ${servo} | ID: ${id}`);
-}
-
-function guardarBaud(servo) {
-  const tab = document.getElementById('pestana${servo}');
-  const baudSelect = tab.querySelector('#baud-servo${servo}');
-  const baud = baudSelect?.value;
-
-  document.getElementById('tabla-baud${servo}').textContent = baud;
-  alert(` Baud Rate guardado para Servo ${servo}: ${baud}`);
-  console.log(` Baud guardado → Servo ${servo} | Baud: ${baud}`);
-}
+}*/
