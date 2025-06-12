@@ -42,8 +42,9 @@ void setup() {
 
 
    //configurar los servomotores
-  configDXL();
+  InitconfigDXL();
   delay(100);
+  
   Serial.println("Configuracion completa."); 
    for (int p = 0; p < 4; p++) {
     Serial.println(servoActivo[p]);
@@ -51,9 +52,12 @@ void setup() {
   //incializar el Server
   server_init();
 
+
+ }
+
   
 
-}
+
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -97,6 +101,7 @@ if (ejecutandoSecuencia) {
         int val = servos[currentServo].puntos[currentPoint].valorPosicion;
         String typ = servos[currentServo].puntos[currentPoint].tipo;
         int currentBaud=servos[currentServo].baudrate;
+        
 
         Serial.print("moviendo servo ");
         Serial.print(currentServo);
@@ -106,9 +111,21 @@ if (ejecutandoSecuencia) {
         Serial.println(typ);
         
         //dxl.setPortProtocolVersion(servos[currentServo]. protocolo);
-        
+
         DXL_SERIAL.begin(currentBaud, SERIAL_8N1, RX_PIN, TX_PIN);
         dxl.begin(currentBaud);
+
+         /*
+        // Solo cambiar baudrate si es diferente
+        static int baudActual = -1;
+        if (currentBaud != baudActual) {
+          Serial.printf("Cambiando baudrate a %d\n", currentBaud);
+          DXL_SERIAL.begin(currentBaud, SERIAL_8N1, RX_PIN, TX_PIN);
+          dxl.begin(currentBaud);
+          delay(20);
+          baudActual = currentBaud;
+        }
+        */
         
         moveDxl(currentServo, typ, val,0);
         puntoEnEjecucion = true;
@@ -194,7 +211,7 @@ if (moveSimple) {
   
       if (abs(currentPos - targetPos) <= angleTolerance) {
         Serial.print("Servo ");
-        //Serial.print(currentServo);
+        Serial.print(currentServo);
         Serial.println(" termino de moverse ");
         moveSimple=false;
         
@@ -232,13 +249,35 @@ if (moveSimple) {
 if (scanMode){
     int countServos =scanServoDxl();
     reorderScanDXL(scanDXL, countServos, modeloOrden, MAX_SERVOS); 
-    events.send( scanResultsJSON(scanDXL, countServos).c_str(), "SCAN" , millis());
+    events.send( scanResultsJSON(scanDXL, MAX_SERVOS).c_str(), "SCAN" , millis());
+
+    for (int i=0; i<MAX_SERVOS; i++){
+      String ServoIndex=String(i+1);
+      String evento = "chanceIcon" + String(i+1);
+      if (scanDXL[i].id != -1) {
+          Serial.print("Servo ");
+          Serial.print(i+1);
+          Serial.println("");
+          IndConfigDXL(i);
+          String flag=  String(servoActivo[i]); 
+
+          events.send( chanceIconJSON(ServoIndex,flag).c_str(), evento.c_str(), millis());
+          
+      }else{
+          Serial.print("Servo ");
+          Serial.print(i+1);
+          Serial.println(" no encontrado");
+          servoActivo[i]=false;
+          String flag=  String(servoActivo[i]); 
+          events.send( chanceIconJSON(ServoIndex,flag).c_str(), evento.c_str(), millis());
+        continue;
+      }
+    }
   
     //request->send(200, "text/plain", "OK");  // Enviar respuesta
     scanMode=false;
     
 }
-
 
 
 /*

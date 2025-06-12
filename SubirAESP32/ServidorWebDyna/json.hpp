@@ -88,3 +88,16 @@ String scanResultsJSON(ServoInfo servos[], int count) {
   Serial.println("Todos los servos: " + jsonString);
   return jsonString;
 }
+
+
+String chanceIconJSON(String servo,String flag){
+     JDoc = JSONVar();  // Limpiar el contenido de JDoc 
+        // Asignación de los valores a los campos JSON
+    JDoc["servo"] = servo;
+    JDoc["ChanceFlag"] = flag;
+
+     // Convertir el JSON a string
+    String jsonString = JSON.stringify(JDoc);
+    Serial.println("→ " + jsonString);  // Imprimir JSON en consola
+    return jsonString;  // Retornar el string JSON    
+}

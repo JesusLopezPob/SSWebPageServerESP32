@@ -11,6 +11,7 @@ void server_init(){
      server.serveStatic("/", SPIFFS, "/");
 
 
+
 // Manejador del endpoint /move
 server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
     unsigned long startTime = millis();  // Marca el inicio
@@ -169,10 +170,10 @@ server.on("/Start", HTTP_GET, [](AsyncWebServerRequest *request){
 server.on("/Scan", HTTP_GET, [](AsyncWebServerRequest *request){
 
     Serial.printf(" Escaneando Servos...\n");
-    int scanServoDxl();  // prototipo
-    void reorderScanDXL(ServoInfo scanDXL[], int count_found, const int modeloOrden[], int ordenSize);//prototipo
     void SCANFlag();
     SCANFlag();
+
+    request->send(200, "text/plain", "OK");  // Enviar respuesta
     
 
 
@@ -204,6 +205,12 @@ server.on("/reportLatencia", HTTP_GET, [](AsyncWebServerRequest *request){
                     client->lastId());
           delay(250);
      }client->send("Hola!", NULL, millis(), 10000);
+
+       for (int p = 0; p < 4; p++) {
+    String evento = "chanceIcon" + String(p + 1);
+    String flag = String(servoActivo[p]); 
+    client->send(chanceIconJSON(String(p + 1), flag).c_str(), evento.c_str(), millis());
+  }
      });
      
      server.addHandler(&events); //Carga manejo de eventos

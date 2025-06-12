@@ -76,6 +76,7 @@ if (!!window.EventSource) {
     const aceCell   = document.getElementById(`tabla-ace${num}`);
 
     if (idCell)    idCell.textContent = servo.id ?? "--";
+    actualizarEstadoServo(num, !!servo.id); // iconos actualiza ícono según si hay ID
     if (baudCell)  baudCell.textContent = servo.baudrate ?? "--";
 
     // Si no tienes datos de PID o velocidad/aceleración en el escaneo, puedes poner placeholders
@@ -87,11 +88,19 @@ if (!!window.EventSource) {
   alert("Datos actualizados correctamente en la tabla.");
 }, false);
   
+    for (let i = 1; i <= 4; i++) {
+      source.addEventListener(`chanceIcon${i}`, function(e) {
+      const data = JSON.parse(e.data);
+      const servo = data.servo;                      // Ej: 0, 1, 2...
+      const chanceFlag = data.ChanceFlag === "1";    // "1" → true, "0" → false
+      actualizarEstadoServo(servo, chanceFlag);
+      }, false);
+    }
 
 
     } 
 
-  
+    /*
   // Envío por presión del botón
   function toggleBoton(element){
     var xhr = new XMLHttpRequest();
@@ -109,7 +118,7 @@ if (!!window.EventSource) {
     xhr.open("GET", "/slider?value="+sliderValue, true);
     xhr.send();
   }
-    
+  */  
   
   // Función para abrir las pestañas
   function openTab(evt, tabName) {
@@ -300,7 +309,7 @@ function guardarID(servo) {
     xhr.open("GET", `/IDChance?servo=${servo}&id=${id}`, true);
     xhr.send();
 
-  document.getElementById(`tabla-id${servo}`).textContent = id;
+  //document.getElementById(`tabla-id${servo}`).textContent = id;
   alert(` ID guardado para Servo ${servo}: ${id}`);
   console.log(` ID guardado → Servo ${servo} | ID: ${id}`);
 }
@@ -314,10 +323,21 @@ function guardarBaud(servo) {
     xhr.open("GET", `/BaudChance?servo=${servo}&baud=${baud}`, true);
     xhr.send();
 
-  document.getElementById(`tabla-baud${servo}`).textContent = baud;
+  //document.getElementById(`tabla-baud${servo}`).textContent = baud;
   alert(` Baud Rate guardado para Servo ${servo}: ${baud}`);
   console.log(` Baud guardado → Servo ${servo} | Baud: ${baud}`);
 }
+
+//iconos
+function actualizarEstadoServo(servo, chanceFlag) {
+  const icono = document.getElementById(`estado-servo${servo}`);
+  if (icono) {
+    icono.src = chanceFlag ? "iconoSI.png" : "iconoNO.png";
+    icono.alt = chanceFlag ? "Conectado" : "No conectado";
+  }
+}
+
+
  /*function medirLatenciaHTTP() {
   const inicio = performance.now(); // Marca el inicio
 

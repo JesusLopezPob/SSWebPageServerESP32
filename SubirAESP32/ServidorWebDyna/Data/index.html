@@ -22,13 +22,24 @@
       <h3>Estado de Ejecución: <span id="estado-ejecucion">Listo</span></h3>
       <p>Paso actual: <span id="paso-actual">0</span></p>
     </div>
-    <div class="tab-container">
-      <div class="tab active" onclick="openTab(event, 'pestana1')">Servo 1</div>
-      <div class="tab" onclick="openTab(event, 'pestana2')">Servo 2</div>
-      <div class="tab" onclick="openTab(event, 'pestana3')">Servo 3</div>
-      <div class="tab" onclick="openTab(event, 'pestana4')">Servo 4</div>
-      <div class="tab" onclick="openTab(event, 'pestana5')">Configuración</div>
-    </div>
+
+     <!--iconos en pestañas -->
+     <div class="tab-container">
+  <div class="tab active" onclick="openTab(event, 'pestana1')">
+    Servo 1 <img id="estado-servo1" class="icono-servo" src="iconoNO.png" alt="estado">
+  </div>
+  <div class="tab" onclick="openTab(event, 'pestana2')">
+    Servo 2 <img id="estado-servo2" class="icono-servo" src="iconoNO.png" alt="estado">
+  </div>
+  <div class="tab" onclick="openTab(event, 'pestana3')">
+    Servo 3 <img id="estado-servo3" class="icono-servo" src="iconoNO.png" alt="estado">
+  </div>
+  <div class="tab" onclick="openTab(event, 'pestana4')">
+    Servo 4 <img id="estado-servo4" class="icono-servo" src="iconoNO.png" alt="estado">
+  </div>
+  <div class="tab" onclick="openTab(event, 'pestana5')">Configuración</div>
+</div>
+
     <div id='pestana1' class='tab-content' style='display:block'>
       <h2>Servo 1</h2>
       <h3>Movimiento Inmediato</h3>
@@ -78,8 +89,8 @@
   <form>
     <label for="baud-servo1">Seleccione velocidad:</label><br>
     <select id="baud-servo1" name="baud-servo1" style="width: 100%; padding: 5px; font-size: 14px;">
-      <option value="2M">2M</option>
-      <option value="1M">1M</option>
+      <option value="2000000">2M</option>
+      <option value="1000000">1M</option>
       <option value="500000">500,000</option>
       <option value="400000">400,000</option>
       <option value="250000">250,000</option>
@@ -146,11 +157,11 @@
   <form>
     <label for="baud-servo2">Seleccione velocidad:</label><br>
     <select id="baud-servo2" name="baud-servo2" style="width: 100%; padding: 5px; font-size: 14px;">
-      <option value="45M">4.5M</option>
-      <option value="4M">4M</option>
-      <option value="3M">3M</option>
-      <option value="2M">2M</option>
-      <option value="1M">1M</option>
+      <option value="4500000">4.5M</option>
+      <option value="4000000">4M</option>
+      <option value="3000000">3M</option>
+      <option value="2000000">2M</option>
+      <option value="1000000">1M</option>
       <option value="115200">115,200</option>
       <option value="57600">57,600</option> 
       <option value="9600">9,600</option>
@@ -211,11 +222,11 @@
   <form>
     <label for="baud-servo3">Seleccione velocidad:</label><br>
     <select id="baud-servo3" name="baud-servo3" style="width: 100%; padding: 5px; font-size: 14px;">
-      <option value="45M">4.5M</option>
-      <option value="4M">4M</option>
-      <option value="3M">3M</option>
-      <option value="2M">2M</option>
-      <option value="1M">1M</option>
+      <option value="4500000">4.5M</option>
+      <option value="4000000">4M</option>
+      <option value="3000000">3M</option>
+      <option value="2000000">2M</option>
+      <option value="1000000">1M</option>
       <option value="115200">115,200</option>
       <option value="57600">57,600</option> 
       <option value="9600">9,600</option>
@@ -263,7 +274,7 @@
   <form>
     <label for="baud-servo4">Seleccione velocidad:</label><br>
     <select id="baud-servo4" name="baud-servo4" style="width: 100%; padding: 5px; font-size: 14px;">
-      <option value="1M">1M</option>
+      <option value="1000000">1M</option>
       <option value="500000">500,000</option>
       <option value="400000">400,000</option>
       <option value="250000">250,000</option>
