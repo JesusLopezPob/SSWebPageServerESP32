@@ -9,8 +9,8 @@
 - [📋 Procedimiento inicialización](#📋-procedimiento-inicialización)  
   - [1. Alimentación del circuito](#1-alimentación-del-circuito-y-shield-dxl)  
   - [2. Conexión de servomotores](#2-conexión-de-servomotores-dynamixel)  
-  - [3. 📶 Conexión vía Wi-Fi al dispositivo ESP32-AP](#3-📶-conexión-vía-wi-fi-al-dispositivo-esp32-ap)
-  - [4. 🌐 Acceso a la interfaz web](#4-🌐-acceso-a-la-interfaz-web-del-ESP32)  
+  - [3. 📶 Conexión vía Wi-Fi al dispositivo ESP32-AP](#3-conexión-vía-wi-fi-al-dispositivo-esp32-ap)
+  - [4. 🌐 Acceso a la interfaz web](#4-acceso-a-la-interfaz-web-del-ESP32)  
 ---
 
 ## 🚀 Instalación  
@@ -72,7 +72,7 @@ npm install  # o pip install, etc.
 
 
 
-### 3. **📶 Conexión vía Wi-Fi al dispositivo ESP32-AP**
+### 3. ** Conexión vía Wi-Fi al dispositivo ESP32-AP**
 ---
 
 Sigue estos pasos para conectarte a la red Wi-Fi del módulo **ESP32-AP** desde diferentes dispositivos:
@@ -102,7 +102,7 @@ Sigue estos pasos para conectarte a la red Wi-Fi del módulo **ESP32-AP** desde 
 
 
 
-### 4. 🌐 **Acceso a la interfaz web del ESP32**
+### 4.  **Acceso a la interfaz web del ESP32**
 
 #### 1. **Ingreso mediante dirección IP**
 1. Abre tu navegador web preferido (Chrome, Firefox, Edge, etc.).
@@ -148,4 +148,155 @@ Sigue estos pasos para encontrarla:
 
 ## 🛠️ Procedimiento Configuracion 
 
+#### 1. **Cambio de Parametros PID**
 
+1. Selecciona el **servo deseado** desde la interfaz.
+2. Dirígete a la sección **`Parámetros de Movimiento`**.
+3. Ingresa los valores deseados en la sección **`Parámetros PID`** (proporcional, integral y derivativo).
+4. Presiona el botón **`Cambiar Parámetros`** para aplicar los nuevos valores.
+5. Aparecerá una alerta con el siguiente mensaje de confirmación:
+ ` ✅ Parametros cambiados al servo 1 con  P:Pvalue I:Ivalue D:Dvalue .....`
+6. Además, en el monitor serial se enviarán los siguientes mensajes para depuración y confirmación:
+    ```cpp
+   [debug] →  {"servo":"1", "P":"Pvalue", "I":"Ivalue", "D":"Dvalue",.....}//mensaje al evento
+
+   [debug] Parametro modificados al Servo 1: P: PValue I:Ivalue D: Dvalue ...... //Mensaje de recepcion del servidor
+
+   [debug] Servo 1 configurado con nuevos parametros PID ,.... // Mensaje de confirmacion de modificacion
+   ```  
+
+#### 2. **Cambio de parametros de velocidad y aceleracion**
+1. Selecciona el **servo deseado** desde la interfaz .
+2. Dirígete a la sección `Parámetros de Movimiento`.
+3. Ingresa los valores deseados en la sección  `Movimiento` (velocidad y aceleración).
+4. Presiona el botón  `Cambiar Parámetros` para aplicar los nuevos valores.
+5. Aparecerá una alerta con el siguiente mensaje de confirmación: ` ✅ Parametros cambiados al servo 1 con  ..... V:Vvalue A:Avalue `
+6. Además, en el monitor serial se enviarán los siguientes mensajes para depuración y confirmación:
+    ```cpp
+   [debug] →  {"servo":"1", ....., "V":"Vvalue","A":"Avalue"}//mensaje al evento
+
+   [debug] Parametro modificados al Servo 1: ......,  //Mensaje de recepcion del servidor
+
+   [debug] Servo 1 configurado con nuevos parametros PID ,...., V :Vvalue , A:Avalue// Mensaje de confirmacion de modificacion
+   ```  
+
+#### 3. **Cambio de ID**
+1. Selecciona el **servo deseado** desde la interfaz .
+2. Dirígete a la sección `ID`.
+3. Ingresa el valor deseado en la sección  `Ingrese ID:`.
+4. Presiona el botón `Guardar ID` para aplicar los nuevos valores.
+5. Aparecerá una alerta con el siguiente mensaje de confirmación:  `ID guardado para Servo 1: IDValue ` 
+6. Además, en el monitor serial se enviarán los siguientes mensajes para depuración y confirmación:
+    ```cpp
+   [debug] →  {"servo":"1", "ID":"IDvalue", "baud":"-1"}//mensaje al evento
+
+   [debug] Usando baudrate leído de NVS:  baudFromNVS  //Mensaje de recepcion del servidor
+
+   [debug]   ID actual del servo 1: IDvalue //Debugging sobre el ID Actual
+
+   [debug]  ✅ ID cambiado correctamente. // Mensaje de confirmacion de modificacion
+
+   [debug]  ❌ Error al cambiar el ID.   //Mensaje en caso de error al modificar el ID
+   ```  
+   En caso que no haya detectado el servo mandara en el Serial el siguiente mensaje :
+   ```cpp
+   [debug] ❌ Servo no encontrado.
+   ```  
+
+#### 4. **Cambio de Baudrate**
+1. Selecciona el **servo deseado** desde la interfaz .
+2. Dirígete a la sección `Baud Rate`.
+3. Seleccione la opcion en la seccion `Seleccione velocidad:`.
+4. Presiona el botón `Guardar Baud Rate` para aplicar los nuevos valores.
+5. Aparecerá una alerta con el siguiente mensaje de confirmación:  `Baud Rate guardado para Servo 1: BaudValue `
+6. Además, en el monitor serial se enviarán los siguientes mensajes para depuración y confirmación:
+   
+    ```cpp
+   [debug] →  {"servo":"1", "ID":"-1", "baud":"BaudValue"} //mensaje al evento
+
+   [debug] Usando baudrate leído de NVS:  baudFromNVS  //Mensaje de recepcion del servidor
+
+   [debug]   ID actual del servo 1: IDvalue //Debugging sobre el ID Actual
+
+   [debug]  ✅ Baudrate cambiado correctamente. // Mensaje de confirmacion de modificacion
+
+   [debug]  ❌ Error al cambiar el baudrate.   //Mensaje en caso de error al modificar el Baud
+
+   ```  
+   En caso que no haya detectado el servo mandara en el Serial el siguiente mensaje :
+   ```cpp
+   [debug] ❌ Servo no encontrado.
+   ```  
+
+
+#### 5. **Escaneo**
+1. Dirígete a la sección **`Configuración`**.
+2. En el apartado **`Resumen de Servos`**, presiona el botón **`ESCANEAR`**.
+3. Aparecerá una alerta con el mensaje:`✅ Iniciando escaneo ...`
+4. El escaneo tomará algunos minutos mientras se detectan todos los servos disponibles.
+5. Al finalizar, se mostrará una alerta con el mensaje:
+ `Datos actualizados correctamente en la tabla..` 
+ Además, los resultados del escaneo se presentarán en una tabla organizada.
+ 6. En la pestaña individual de cada servo, verás un ícono de estado:
+- ✅ Una palomita indica que el servo está **operativo y fue detectado correctamente**.
+- ❌ Un tache indica que el servo **no responde o está desconectado**.
+
+
+## 🔄 Procedimiento Movimiento Servos
+
+#### 1. **Movimiento sencillo**
+1. Selecciona el **servo deseado** desde la interfaz .
+2. Dirígete a la sección `Movimiento Inmediato`.
+3. Selecciona cómo deseas trabajar la posición del servo usando los **botones de opción**:
+- **Grados**: 0° a 360°
+- **Unidades de encoder**: 0 a 4095
+4. Ingresa el valor deseado en la sección  `Posición:`
+5. Presiona el botón `Mover` para mandar el comando.
+6. Aparecerá una alerta con el siguiente mensaje de confirmación, según el tipo de unidad seleccionada:
+`✅ Movimiento enviado al Servo 1 con 200°`
+o bien 
+`✅ Movimiento enviado al Servo 2 con 2000 units.`
+
+   Si ingresas un valor inválido, se mostrará el siguiente mensaje de advertencia:
+   `⚠️ Ingresa un número válido.`
+7. Además, en el monitor serial se enviarán los siguientes mensajes para depuración y confirmación:
+    ```cpp
+   [debug] →  {"servo":"1","type":"typevalue","value":"Posvalue"}//mensaje al evento
+
+   [debug] Moviendo el  Servo 1: 200 angle   //Mensaje de recepcion del servidor
+
+   [debug] Servo 1 termino de moverse// Mensaje de finalizacion del movimiento
+   ```  
+
+
+#### 2. **Agregar punto en trayectoria**
+1. Selecciona el **servo deseado** desde la interfaz .
+2. Dirígete a la sección `Configuración Trayectoria`.
+3. Selecciona cómo deseas trabajar la posición del servo usando los **botones de opción**:
+- **Grados**: 0° a 360°
+- **Unidades de encoder**: 0 a 4095
+4. Ingresa el valor deseado en la sección  `Posición:`
+5. Presiona el botón `Punto agregado` para guardar el punto.
+6. Aparecerá una alerta con el siguiente mensaje de confirmación, según el tipo de unidad seleccionada:
+`✅ Punto agregado para el Servo 1 con 200°`
+o bien 
+`✅ Punto agregado para el Servo 2 con 2000 units.`
+
+   Si ingresas un valor inválido, se mostrará el siguiente mensaje de advertencia:
+   `⚠️ Ingresa un número válido.`
+1. Además, en el monitor serial se enviarán los siguientes mensajes para depuración y confirmación:
+    ```cpp
+   [debug] →  {"servo":"1","type":"typevalue","value":"Posvalue"}//mensaje al evento
+
+   [debug] Punto agregado al Servo 1: 200 angle   //Mensaje de recepcion del servidor
+
+   [debug] Punto agregado correctamente // Mensaje de confirmacion de guardado
+   ```  
+   ⚠️ **Advertencia:** Cada servo puede almacenar hasta 10 puntos de trayectoria.
+   Si alguno supera ese límite, se mostrará el siguiente mensaje:
+
+   ```cpp
+   [debug] Error: no se puede agregar más puntos  // Mensaje de error de guardado
+   ```
+
+#### 3. **Ejecutar trayectoria**

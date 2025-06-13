@@ -624,7 +624,7 @@ void chanceServoParamet(int index, int newBaud, int newID) {
 
   if (dxl.ping(id)) {
     Serial.println("✅  Servo detectado correctamente.");
-
+    dxl.torqueOff(id); 
     if (newID != -1) {
       uint8_t direccionID = (index == 1 || index == 2) ? 0x07 : 0x03;
       if (dxl.write(id, direccionID, (uint8_t*)&newID, 1, 100)) {
@@ -632,23 +632,28 @@ void chanceServoParamet(int index, int newBaud, int newID) {
         Serial.println(newID);
         servos[index].id = newID;
         prefs.putUInt(("id" + String(index)).c_str(), newID);
+        dxl.torqueOn(servos[index].id); 
       } else {
         Serial.println("❌ Error al cambiar el ID.");
+        dxl.torqueOn(id);
       }
     }
 
     if (newBaud != -1) {
       uint8_t direccionBaud = (index == 1 || index == 2) ? 0x08 : 0x04;
       uint8_t baudValue = getBaudValue(index, newBaud);
-      if (dxl.write(id, direccionBaud, &baudValue, 1, 100)) {
+      //dxl.write(id, direccionBaud, &baudValue, 1, 100)
+      if (dxl.setBaudrate(id, newBaud)) {
         Serial.println("✅ Baudrate cambiado correctamente.");
         Serial.println(newBaud);
         servos[index].baudrate = newBaud;
         prefs.putUInt(("baud" + String(index)).c_str(), newBaud);
+        dxl.torqueOn(id); 
 
         
       } else {
         Serial.println("❌ Error al cambiar el baudrate.");
+        dxl.torqueOn(id); 
       }
     }
 
