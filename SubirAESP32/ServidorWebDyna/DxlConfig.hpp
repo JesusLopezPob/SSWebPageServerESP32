@@ -269,8 +269,11 @@ void IndConfigDXL(int index){
 }
 
 //funcion  para reorganizar los resultados del scan en orden segun el orden que se muestra en la interfaz web
-void reorderScanDXL(ServoInfo scanDXL[], int count_found, const int modeloOrden[], int ordenSize) {
+void reorderScanDXL(ServoInfo scanDXL[], int count_found,  int modeloOrden[], int ordenSize) {
   ServoInfo original[MAX_SERVOS];
+  for (int i=0; i<4;i++){
+    modeloOrden[i]=servos[i].id;
+  }
 
   // Copiar los resultados encontrados para no sobrescribir
   for (int i = 0; i < count_found; i++) {
@@ -288,7 +291,7 @@ void reorderScanDXL(ServoInfo scanDXL[], int count_found, const int modeloOrden[
   // Reordenar según modeloOrden[]
   for (int i = 0; i < ordenSize; i++) {
     for (int j = 0; j < count_found; j++) {
-      if (original[j].model_number == modeloOrden[i]) {
+      if (original[j].id == modeloOrden[i]) {
         scanDXL[i] = original[j];
         break;
       }
