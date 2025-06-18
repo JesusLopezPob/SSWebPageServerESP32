@@ -627,7 +627,8 @@ void chanceServoParamet(int index, int newBaud, int newID) {
     dxl.torqueOff(id); 
     if (newID != -1) {
       uint8_t direccionID = (index == 1 || index == 2) ? 0x07 : 0x03;
-      if (dxl.write(id, direccionID, (uint8_t*)&newID, 1, 100)) {
+      // dxl.write(id, direccionID, (uint8_t*)&newID, 1, 100)
+      if (dxl.setID(id,newID)) {
         Serial.println("✅ ID cambiado correctamente.");
         Serial.println(newID);
         servos[index].id = newID;

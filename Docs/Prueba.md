@@ -27,7 +27,7 @@ npm install  # o pip install, etc.
 ---
    - **Conexión de 5V**:  
      Conecta el voltaje de **5V** a la **terminal de bornera del circuito principal** (ver imagen de referencia). 
-      
+      s
      ![Ejemplo conexión 5V](/Docs/images/prueba1.png)  
 
    - **Conexión de 12V**:  
@@ -300,3 +300,63 @@ o bien
    ```
 
 #### 3. **Ejecutar trayectoria**
+
+1. Dirígete a la parte inferior de la pagina
+2. Presiona el botón `Ejecutar secuencia alternada` para guardar el punto.
+3. Aparecerá una alerta con el siguiente mensaje :
+`✅ Ejecutando secuencia alternada...`
+4. Además, en el monitor serial se enviarán los siguientes mensajes para depuración y confirmación:
+    ```cpp
+   [debug] →  {"start":"1"}  //mensaje al evento
+
+   [debug] Punto maximo: 2  //Mensaje de recepción del servidor, indicando la longitud máxima de la trayectoria configurada (en este caso, 2 puntos).
+
+   [debug] Servo 5 inactivo o sin punto, saltando... //El sistema detecta que el servo 5 no está activo o no tiene puntos definidos en la trayectoria, por lo que omite su ejecución.
+
+   [debug] moviendo servo 1 a 300 Angle //El servo 1 recibe la instrucción de moverse a una posición específica (ángulo 300).
+
+   [debug] Servo 1 llego al punto 1 //Confirmación de que el servo 1 ha alcanzado exitosamente el primer punto de la trayectoria.
+
+   [debug] Servo 2 llego al punto 1 //Confirmación de que el servo 2 ha alcanzado exitosamente el primer punto de la trayectoria.
+
+   [debug] Punto 1 completado  //Indica que todos los servos involucrados han completado la ejecución del Punto 1 de la trayectoria.
+
+   [debug] Secuencia completada // Mensaje final que confirma la ejecución exitosa de toda la trayectoria programada.
+   ```  
+
+## 🧰 Configuración del entorno de desarrollo
+ ### Requisitos del sistema
+- Sistema operativo: Windows 10/11, Ubuntu 22.04 LTS o macOS Ventura
+- Espacio en disco: mínimo 500 MB
+- Conexión a internet (solo para la instalación)
+
+ ### Software necesario
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Arduino IDE 1.8.18](https://www.arduino.cc/en/software/OldSoftwareReleases/) 
+  - Board: ESP32 Dev Module (Instalar desde el Gestor de Placas como **esp32** by **espressif Systems**)
+  
+### Dependencias o librerías
+
+
+#### Librerías externas
+- [ESPAsyncWebServer v1.2.4](https://github.com/ESP32Async/ESPAsyncWebServer) - Servidor web asíncrono.
+- [Arduino_JSON v0.2.0](https://github.com/arduino-libraries/Arduino_JSON) - Soporte para JSON (legacy).
+- [Dynamixel2Arduino](https://github.com/ROBOTIS-GIT/Dynamixel2Arduino) - Control de servomotores Dynamixel.
+
+#### Librerías integradas en ESP32 (Core 3.0.1+)
+- **SPIFFS** -Acceso via (`#include <SPIFFS.h>`).
+- **nvs_flash** - Acceso via `Preferences.h`.
+
+#### Herramientas
+- [SPIFFS Plugin](https://github.com/me-no-dev/arduino-esp32fs-plugin) - Subir archivos al ESP32 (Arduino IDE).
+  - [Video tutorial](https://youtu.be/PF_URnKhsNQ?si=sJlZXYrpXU3g78sV).
+
+
+
+### Compilacion y carga del Firmware
+
+#### SPIFFS
+
+Creacion del repositorio  para SPIFFS
+
+1.En la  
