@@ -10,7 +10,14 @@
   - [1. Alimentación del circuito](#1-alimentación-del-circuito-y-shield-dxl)  
   - [2. Conexión de servomotores](#2-conexión-de-servomotores-dynamixel)  
   - [3. 📶 Conexión vía Wi-Fi al dispositivo ESP32-AP](#3-conexión-vía-wi-fi-al-dispositivo-esp32-ap)
-  - [4. 🌐 Acceso a la interfaz web](#4-acceso-a-la-interfaz-web-del-ESP32)  
+  - [4. 🌐 Acceso a la interfaz web](#4-acceso-a-la-interfaz-web-del-ESP32)
+- [Estructura del Código](#-estructura-del-código)
+- [Arquitectura General](#-arquitectura-general)
+- [Diagrama de Estados](#-diagrama-de-estados)
+- [Manual del Desarrollador](#-manual-del-desarrollador)
+- [Carga SPIFFS](#-carga-spiffs)
+- [Compilación Arduino](#-compilación-arduino)
+- [Pendientes](#-pendientes)
 ---
 
 ## 🚀 Instalación  
