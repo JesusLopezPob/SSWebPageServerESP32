@@ -12,7 +12,6 @@
   - [3. 📶 Conexión vía Wi-Fi al dispositivo ESP32-AP](#3-conexión-vía-wi-fi-al-dispositivo-esp32-ap)
   - [4. 🌐 Acceso a la interfaz web](#4-acceso-a-la-interfaz-web-del-ESP32)
 - [Estructura del Código](#-estructura-del-código)
-- [Arquitectura General](#-arquitectura-general)
 - [Diagrama de Estados](#-diagrama-de-estados)
 - [Manual del Desarrollador](#-manual-del-desarrollador)
 - [Carga SPIFFS](#-carga-spiffs)
@@ -367,3 +366,204 @@ o bien
 Creacion del repositorio  para SPIFFS
 
 1.En la  
+
+## vip
+## Estructura del Código
+
+El sistema de control remoto del brazo robótico está construido con una arquitectura modular dividida en dos bloques principales:
+
+1. **Bloque embebido**: ejecutado en el microcontrolador ESP32.
+2. **Bloque web**: interfaz gráfica accesible desde un navegador.
+
+Ambos bloques se comunican mediante el protocolo HTTP y tecnologías web modernas, asegurando una interacción en tiempo real sin necesidad de recargar la página.
+---
+### 1. Archivos principales
+
+#### `index.html` – Interfaz web del usuario
+Define la estructura de la interfaz que el usuario visualiza en el navegador. Incluye:
+
+- Encabezados (`<h1>`, `<h2>`, `<h3>`)
+- Formularios de control por servo
+- Pestañas interactivas
+- Imágenes dinámicas por sección
+- Tabla resumen de estado de cada servo
+
+> Usa HTML semántico para facilitar el mantenimiento y la accesibilidad.
+---
+#### `styles.css` – Diseño visual con layout responsivo
+
+- Define el estilo visual general (colores, fuentes, márgenes, distribución).
+- Utiliza **variables CSS** en `:root` para personalizar fácilmente temas y colores.
+- Divide la pantalla en dos secciones:  
+  - `.controls` (panel izquierdo para configuración)
+  - `.image-container` (panel derecho con imágenes de referencia)
+- Incluye efectos `hover`, pestañas activas, diseño responsivo y decoración con líneas laterales.
+
+> El diseño es moderno, profesional y adaptable a escritorio o móvil.
+---
+#### `normalize.css` – Estandarización de estilos base
+
+- Restablece los estilos por defecto del navegador.
+- Garantiza uniformidad en tipografías, márgenes, botones, inputs, etc.
+- Mejora la compatibilidad visual entre navegadores (Chrome, Firefox, Edge, Safari).
+
+> No afecta el diseño personalizado, pero es fundamental para evitar inconsistencias visuales.
+---
+#### `script.js` – Lógica de interacción y envío de comandos
+
+- Controla el cambio entre pestañas (`openTab`).
+- Captura datos de formularios y los envía al ESP32 vía `XMLHttpRequest`.
+- Escucha eventos del servidor (`EventSource`) para mantener la página actualizada.
+- Actualiza íconos de estado, muestra alertas y manipula el DOM dinámicamente.
+
+> Contiene funciones clave como `submitForm()`, `addPoint()`, `guardarID()`, `actualizarEstadoServo()`.
+---
+#### `main.ino` o `firmware.ino` – Controlador embebido en el ESP32
+
+- Programado en C++ para el entorno Arduino.
+- Carga librerías como `ESPAsyncWebServer`, `SPIFFS`, `Dynamixel2Arduino`.
+- Define rutas HTTP (`/move`, `/addPoint`, etc.) y lanza eventos para la interfaz.
+- Usa una máquina de estados para coordinar movimientos secuenciales.
+
+> Toda la lógica embebida del sistema vive en este archivo y sus módulos `.hpp`.
+---
+### 2. Organización en SPIFFS
+
+El sistema utiliza **SPIFFS (SPI Flash File System)** para almacenar los archivos web en la memoria interna del ESP32.
+
+Estructura de carpetas recomendada dentro de `/data`:
+/data
+├── index.html            # Interfaz principal
+├── styles.css            # Diseño visual
+├── normalize.css         # Normalizador de estilos
+├── script.js             # Lógica e interacción
+├── fondo.png             # Imagen de fondo del sistema
+├── iconoSI.png           # Icono para servo detectado
+├── iconoNO.png           # Icono para servo no detectado
+├── servo1.jpeg           # Imagen de referencia de servo 1
+├── servo2.jpeg           # Imagen de referencia de servo 2
+├── servo3.jpeg           # Imagen de referencia de servo 3
+├── servo4.jpeg           # Imagen de referencia de servo 4
+├── confi.jpeg            # Imagen usada en pestaña de configuración
+
+
+**Subida al ESP32**:
+- Instala el plugin [ESP32 Sketch Data Upload](https://github.com/me-no-dev/arduino-esp32fs-plugin).
+- Coloca todos los archivos en `/data`.
+- Ejecuta desde el menú: `Herramientas → ESP32 Sketch Data Upload`.
+
+> Esta técnica permite que el ESP32 sirva los archivos directamente sin depender de un servidor externo.
+
+## Diagrama de estados 
+
+PENDIENTES
+
+## Manual del Desarrollador
+
+Este manual está diseñado para guiar a desarrolladores en la comprensión, modificación y expansión del sistema de control remoto embebido basado en ESP32. La arquitectura modular del proyecto permite la incorporación de nuevas funciones y dispositivos con mínima intervención en el núcleo existente.
+---
+###  1. ¿Cómo extender o modificar el código?
+
+#### A. Agregar una nueva pestaña (por ejemplo, un nuevo servo o módulo)
+
+1. **Abrir `index.html`**
+2. Copiar y pegar una pestaña existente:
+   ```html
+   <div class="tab" onclick="openTab(event, 'pestanaX')">
+     Servo X <img id="estado-servoX" class="icono-servo" src="iconoNO.png" alt="estado">
+   </div>
+   ```
+3. Crear el contenido de la pestaña:
+   ```html
+   <div id='pestanaX' class='tab-content'>
+     <!-- contenido -->
+   </div>
+   ```
+4. Subir los cambios al ESP32 usando SPIFFS.
+---
+####  B. Añadir nuevos eventos en `script.js`
+1. Localiza la sección de `EventSource`.
+2. Agrega una nueva escucha:
+   ```js
+   source.addEventListener('nuevoEvento', function(e) {
+     const data = JSON.parse(e.data);
+     console.log("Nuevo evento:", data);
+   }, false);
+   ```
+---
+####  C. Crear nuevas rutas HTTP en el firmware
+1. Abre `server.hpp` o el archivo `.ino` correspondiente.
+2. Agrega una nueva ruta:
+   ```cpp
+   server.on("/nuevaRuta", HTTP_GET, [](AsyncWebServerRequest *request){
+     request->send(200, "text/plain", "OK");
+   });
+   ```
+3. (Opcional) Lanza un evento:
+   ```cpp
+   events.send("mensaje", "nuevoEvento");
+   ```
+---
+#### D. Subir archivos a SPIFFS
+
+1. Coloca los archivos en la carpeta `/data`.
+2. En Arduino IDE: `Herramientas > ESP32 Sketch Data Upload`.
+3. Verifica desde el Monitor Serial que la carga fue exitosa.
+---
+### 2. Variables o funciones críticas
+
+| Función                     | Descripción                                                  | Archivo     |
+|----------------------------|--------------------------------------------------------------|-------------|
+| `openTab()`                | Cambia pestañas e imagen dinámica                           | script.js   |
+| `submitForm(servo)`        | Envía posición a un servo                                    | script.js   |
+| `addPoint(servo)`          | Agrega un punto de trayectoria                               | script.js   |
+| `submitMoveParame(servo)`  | Cambia parámetros PID, velocidad y aceleración              | script.js   |
+| `guardarID(servo)`         | Guarda nuevo ID para el servo                               | script.js   |
+| `guardarBaud(servo)`       | Configura el baudrate del servo                             | script.js   |
+| `executeSequence()`        | Ejecuta la secuencia alternada                              | script.js   |
+| `actualizarEstadoServo()`  | Actualiza íconos de conexión                                 | script.js   |
+| `source.addEventListener`  | Escucha eventos del ESP32                                    | script.js   |
+---
+### 3. ¿Cómo agregar un nuevo sensor o actuador?
+
+#### A. Conexión física al ESP32
+
+- Identifica si es señal **digital** o **analógica**.
+- Conecta el sensor y declara su pin:
+  ```cpp
+  const int sensorPin = 34;
+  ```
+#### B. Leer desde el firmware
+```cpp
+int sensorValue = analogRead(sensorPin);
+if(sensorValue > UMBRAL){
+  events.send("{\"sensor\":\"distancia\",\"valor\":" + String(sensorValue) + "}", "sensorEvento");
+}
+```
+#### C. Escuchar en `script.js`
+```js
+source.addEventListener('sensorEvento', function(e) {
+  const data = JSON.parse(e.data);
+  document.getElementById("sensor-status").innerText = `Valor: ${data.valor}`;
+});
+```
+#### D. Mostrar en `index.html`
+
+```html
+<div id="sensor-status">Esperando señal...</div>
+```
+---
+### Recomendaciones 
+- Comenta todo código nuevo.
+- Usa nombres descriptivos para eventos y variables.
+- Asegúrate de reiniciar el ESP32 después de subir nuevos archivos.
+- Mantén las funciones encapsuladas y separadas por propósito.
+- Documenta cada nuevo endpoint o evento para futuras referencias.
+---
+ 
+
+
+
+
+
+
