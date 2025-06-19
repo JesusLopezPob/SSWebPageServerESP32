@@ -430,21 +430,23 @@ Define la estructura de la interfaz que el usuario visualiza en el navegador. In
 ### 2. Organización en SPIFFS
 
 El sistema utiliza **SPIFFS (SPI Flash File System)** para almacenar los archivos web en la memoria interna del ESP32.
+ ### Estructura de la carpeta `/data` (SPIFFS)
 
-Estructura de carpetas recomendada dentro de `/data`:
-/data
-├── index.html            # Interfaz principal
-├── styles.css            # Diseño visual
-├── normalize.css         # Normalizador de estilos
-├── script.js             # Lógica e interacción
-├── fondo.png             # Imagen de fondo del sistema
-├── iconoSI.png           # Icono para servo detectado
-├── iconoNO.png           # Icono para servo no detectado
-├── servo1.jpeg           # Imagen de referencia de servo 1
-├── servo2.jpeg           # Imagen de referencia de servo 2
-├── servo3.jpeg           # Imagen de referencia de servo 3
-├── servo4.jpeg           # Imagen de referencia de servo 4
-├── confi.jpeg            # Imagen usada en pestaña de configuración
+| Archivo             | Descripción                                                  |
+|---------------------|--------------------------------------------------------------|
+| `index.html`        | Interfaz principal del sistema accesible desde el navegador. |
+| `styles.css`        | Archivo de estilos personalizados (layout, colores, fuentes).|
+| `normalize.css`     | Hoja de estilos base para estandarizar visualización entre navegadores. |
+| `script.js`         | Lógica de interacción entre el usuario y el ESP32.           |
+| `fondo.png`         | Imagen de fondo usada en todo el sistema.                    |
+| `iconoSI.png`       | Icono mostrado cuando un servo está conectado correctamente. |
+| `iconoNO.png`       | Icono mostrado cuando un servo no está conectado.            |
+| `servo1.jpeg`       | Imagen representativa del Servo 1 (usada en la pestaña 1).   |
+| `servo2.jpeg`       | Imagen representativa del Servo 2 (usada en la pestaña 2).   |
+| `servo3.jpeg`       | Imagen representativa del Servo 3 (usada en la pestaña 3).   |
+| `servo4.jpeg`       | Imagen representativa del Servo 4 (usada en la pestaña 4).   |
+| `confi.jpeg`        | Imagen usada en la pestaña de configuración general.         |
+
 
 
 **Subida al ESP32**:
