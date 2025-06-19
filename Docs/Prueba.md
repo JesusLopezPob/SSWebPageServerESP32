@@ -376,6 +376,7 @@ El sistema de control remoto del brazo robótico está construido con una arquit
 2. **Bloque web**: interfaz gráfica accesible desde un navegador.
 
 Ambos bloques se comunican mediante el protocolo HTTP y tecnologías web modernas, asegurando una interacción en tiempo real sin necesidad de recargar la página.
+
 ---
 ### 1. Archivos principales
 
@@ -457,12 +458,27 @@ El sistema utiliza **SPIFFS (SPI Flash File System)** para almacenar los archivo
 > Esta técnica permite que el ESP32 sirva los archivos directamente sin depender de un servidor externo.
 
 ## Diagrama de estados 
+El comportamiento del sistema embebido que corre en el ESP32 se basa en una **máquina de estados finitos (FSM, por sus siglas en inglés)**. Este enfoque estructurado permite controlar de forma secuencial las acciones del brazo robótico, garantizando que cada movimiento se complete correctamente antes de pasar al siguiente.
 
-PENDIENTES
+El uso de una FSM mejora la **robustez, mantenibilidad y control de flujo**, especialmente cuando se manejan secuencias de múltiples puntos, eventos asíncronos o condiciones de validación (como la detección de servos activos, límites de posición o errores de comunicación).
+
+### Funcionalidad general del sistema controlado por estados
+
+- Cada **estado** representa una etapa específica del proceso (por ejemplo: inactivo, moviendo, esperando confirmación, etc.).
+- El sistema **avanza de un estado a otro** cuando se cumplen ciertas condiciones (por ejemplo: llegada a la posición deseada, timeout, respuesta del servo).
+- Se utilizan **temporizadores, banderas de confirmación y buffers de trayectoria** para garantizar una ejecución segura y sincrónica.
+
+Una vez recibido el comando de "Ejecutar secuencia alternada" desde la interfaz web, el sistema comienza a recorrer una lista de puntos predefinidos que deben ser enviados a los servos activos, uno por uno, hasta completar la trayectoria completa.
+
+---
+ DIAGRAMAS 
+
+
 
 ## Manual del Desarrollador
 
 Este manual está diseñado para guiar a desarrolladores en la comprensión, modificación y expansión del sistema de control remoto embebido basado en ESP32. La arquitectura modular del proyecto permite la incorporación de nuevas funciones y dispositivos con mínima intervención en el núcleo existente.
+
 ---
 ###  1. ¿Cómo extender o modificar el código?
 
@@ -561,6 +577,283 @@ source.addEventListener('sensorEvento', function(e) {
 - Asegúrate de reiniciar el ESP32 después de subir nuevos archivos.
 - Mantén las funciones encapsuladas y separadas por propósito.
 - Documenta cada nuevo endpoint o evento para futuras referencias.
+---
+
+## Carga SPIFFS (Sistema de Archivos del ESP32)
+
+La interfaz web de este proyecto no depende de servidores externos, sino que se **almacena directamente en la memoria flash del ESP32** mediante el sistema de archivos SPIFFS (*Serial Peripheral Interface Flash File System*). Esto permite que el ESP32 sirva archivos estáticos (como HTML, CSS, JS e imágenes) de forma autónoma a través del navegador web de cualquier dispositivo conectado a su red.
+
+A continuación se detalla el proceso completo para preparar, configurar y subir correctamente los archivos al ESP32 utilizando SPIFFS.
+
+---
+
+### 1. Instalar el plugin **ESP32 Sketch Data Upload**
+
+El IDE de Arduino no incluye de forma predeterminada la funcionalidad para cargar carpetas de archivos al sistema SPIFFS del ESP32. Para ello, es necesario instalar un plugin adicional llamado **ESP32FS Tool**.
+
+#### Pasos para instalar el plugin:
+
+1. Cierra el IDE de Arduino (si está abierto).
+2. Descarga el plugin desde el repositorio oficial:  
+ [ESP32 Sketch Data Upload – GitHub](https://github.com/me-no-dev/arduino-esp32fs-plugin)
+3. Descomprime el archivo `.zip` descargado.
+4. Copia la carpeta descomprimida `ESP32FS` en el siguiente directorio, según tu sistema operativo:
+
+| Sistema Operativo | Ruta donde pegar el plugin                                         |
+|-------------------|---------------------------------------------------------------------|
+| **Windows**       | `C:\Users\<tu_usuario>\Documents\Arduino\tools\ESP32FS\tool\`       |
+| **macOS**         | `~/Documents/Arduino/tools/ESP32FS/tool/`                          |
+| **Linux**         | `~/Arduino/tools/ESP32FS/tool/`                                     |
+
+5. Asegúrate de que la ruta final contenga un archivo llamado `esp32fs.jar`.
+
+6. Vuelve a abrir el Arduino IDE. Debería aparecer una nueva opción en el menú:
+   ```
+   Herramientas > ESP32 Sketch Data Upload
+   ```
+
+**Verifica que esté visible** antes de continuar con los pasos siguientes.
+---
+### 2. Crear la carpeta `/data`
+
+El sistema SPIFFS carga únicamente los archivos que se encuentren dentro de una carpeta llamada exactamente `/data`, ubicada al mismo nivel del archivo `.ino` principal de tu proyecto.
+
+#### Estructura recomendada:
+
+```bash
+TuProyecto/
+├── TuProyecto.ino
+└── data/
+    ├── index.html
+    ├── styles.css
+    ├── script.js
+    ├── normalize.css
+    ├── fondo.png
+    ├── iconoSI.png
+    ├── iconoNO.png
+    ├── servo1.jpeg
+    ├── servo2.jpeg
+    ├── servo3.jpeg
+    ├── servo4.jpeg
+    └── confi.jpeg
+```
+
+ **Importante:**
+- El nombre de la carpeta debe ser exactamente `data` (todo en minúsculas).
+- Todos los archivos que se usarán en el navegador (como HTML, CSS, JS e imágenes) deben estar dentro de esta carpeta.
+
+---
+
+###  3. Subir los archivos al ESP32
+
+Una vez que tienes la carpeta `/data` lista, puedes subir su contenido a la memoria flash del ESP32.
+
+#### Procedimiento:
+
+1. Abre el **proyecto en el Arduino IDE**.
+2. Asegúrate de seleccionar la **placa correcta** desde el menú:
+   ```
+   Herramientas > Placa > ESP32 Dev Module
+   ```
+3. Selecciona el **puerto correcto** donde está conectado tu ESP32:
+   ```
+   Herramientas > Puerto > COMX o /dev/ttyUSBX
+   ```
+4. Conecta tu ESP32 a la computadora mediante USB.
+
+5. Ahora, haz clic en el menú:
+   ```
+   Herramientas > ESP32 Sketch Data Upload
+   ```
+6. Espera unos segundos mientras se carga el sistema de archivos. Verás en el monitor de salida mensajes similares a:
+```
+[SPIFFS] Uploading file: /index.html
+[SPIFFS] Uploading file: /styles.css
+...
+[SPIFFS] Total file size: 78.2 KB
+[SPIFFS] Success!
+```
+---
+
+###  4. Verificación en Monitor Serial
+
+Para confirmar que los archivos fueron cargados correctamente:
+
+1. Abre el **Monitor Serial** (Ctrl+Shift+M).
+2. Asegúrate de que tu código incluya la inicialización del SPIFFS, por ejemplo:
+
+```cpp
+if (!SPIFFS.begin(true)) {
+  Serial.println("Error al montar SPIFFS");
+  return;
+}
+Serial.println("SPIFFS montado correctamente");
+```
+
+3. Si el sistema se montó con éxito, deberías ver un mensaje como:
+```
+SPIFFS montado correctamente
+```
+
+Además, cuando accedas a la dirección IP del ESP32 en el navegador, podrás ver la interfaz web que tú diseñaste.
+
+---
+### Errores comunes y cómo resolverlos
+
+| Error                                           | Posible causa / solución                                                  |
+|------------------------------------------------|---------------------------------------------------------------------------|
+| `SPIFFS mount failed`                          | El archivo `.ino` no contiene `SPIFFS.begin()` o está mal implementado.  |
+| Plugin no aparece en el menú                   | Plugin mal instalado. Verifica ruta y reinicia Arduino IDE.              |
+| Archivos no se actualizan                      | Asegúrate de guardar todos los cambios antes de hacer el upload.         |
+| Carga fallida, aparece "No serial port found"  | Verifica el cable USB y el puerto seleccionado en el IDE.                |
+
+---
+
+###  Recomendaciónes
+
+Incluye un bloque como este en tu `setup()` para confirmar los archivos disponibles:
+
+```cpp
+File root = SPIFFS.open("/");
+File file = root.openNextFile();
+while (file) {
+  Serial.print("Archivo encontrado: ");
+  Serial.println(file.name());
+  file = root.openNextFile();
+}
+```
+
+Esto te ayudará a verificar desde el Monitor Serial qué archivos están presentes y disponibles para ser servidos por el ESP32, con estos pasos completados, la ESP32 estará sirviendo una página web completamente funcional desde su propia memoria, sin depender de servidores externos o internet.
+
+ ##  Compilación Arduino IDE
+
+El firmware es la parte del proyecto que corre directamente sobre el microcontrolador ESP32. Este código es responsable de crear el servidor web, controlar los servomotores Dynamixel, gestionar los archivos almacenados en SPIFFS y comunicarse con la interfaz del usuario.
+
+Para compilar y cargar correctamente el firmware en el ESP32 desde el **Arduino IDE**, es fundamental seguir cuidadosamente los pasos descritos a continuación.
+
+---
+### 1. Seleccionar placa y puerto
+
+Antes de compilar, debes asegurarte de que el entorno de desarrollo esté configurado correctamente para el ESP32:
+
+#### A. Seleccionar la placa correcta
+
+1. Abre Arduino IDE.
+2. Ve al menú superior:
+   ```
+   Herramientas > Placa > ESP32 Arduino > ESP32 Dev Module
+   ```
+3. Si no aparece “ESP32 Dev Module”, debes instalar el soporte para ESP32:
+   - Ir a `Archivo > Preferencias`
+   - En "Gestor de URLs Adicionales de Tarjetas" añade:
+     ```
+     https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+     ```
+   - Luego ve a:
+     ```
+     Herramientas > Placa > Gestor de placas...
+     ```
+   - Busca **esp32** e instala el paquete oficial de **Espressif Systems**.
+
+#### B. Seleccionar el puerto adecuado
+
+1. Conecta tu ESP32 por USB a la computadora.
+2. Luego en Arduino IDE ve a:
+   ```
+   Herramientas > Puerto > COMx (Windows) o /dev/ttyUSBx (Linux/macOS)
+   ```
+
+> Asegúrate de que **el puerto cambie** al conectar y desconectar el ESP32. Si no aparece, puede deberse a un problema de drivers.
+
+---
+
+### 2. Cargar librerías necesarias
+
+El proyecto utiliza varias librerías externas y del núcleo de ESP32. Asegúrate de tenerlas instaladas para evitar errores de compilación.
+
+#### A. Librerías externas necesarias
+
+Instálalas desde:  
+`Programa > Incluir Librería > Administrar Bibliotecas`
+
+| Librería                | Versión recomendada | Función principal                                    |
+|------------------------|---------------------|------------------------------------------------------|
+| **Dynamixel2Arduino**  | ≥ 0.3.0             | Control de servomotores Dynamixel vía UART          |
+| **ESPAsyncWebServer**  | 1.2.4               | Servidor web asíncrono para ESP32                   |
+| **Arduino_JSON**       | ≥ 0.2.0             | Procesamiento y análisis de objetos JSON            |
+
+ Algunas librerías requieren otras dependencias como `AsyncTCP` (instálala también si se solicita).
+
+---
+
+###  3. Configuración del archivo principal (.ino)
+
+Asegúrate de que tu archivo `.ino` contenga al menos lo siguiente en su función `setup()`:
+
+```cpp
+void setup() {
+  Serial.begin(115200);                      // Inicializa la comunicación serial para depuración
+  WiFi.softAP("ESP32-AP");                   // Crea una red Wi-Fi en modo punto de acceso (AP)
+  
+  if (!SPIFFS.begin(true)) {                 // Monta el sistema de archivos SPIFFS
+    Serial.println(" Error al montar SPIFFS");
+    return;
+  }
+  Serial.println(" SPIFFS montado correctamente");
+
+  // Aquí se debe iniciar el servidor web, eventos y configuración de servos
+  iniciarServidor();
+  iniciarEventos();
+  configurarServos();
+}
+```
+
+> Puedes dividir la lógica en archivos auxiliares como `server.hpp`, `DXLConfig.hpp`, etc. siguiendo una arquitectura modular.
+
+---
+
+###  4. Subir el firmware al ESP32
+
+Una vez que todo esté configurado:
+
+1. Guarda todos los archivos del proyecto.
+2. Haz clic en el botón `Subir` (ícono con flecha hacia la derecha).
+3. Espera a que compile y se cargue el firmware al ESP32.
+4. Abre el `Monitor Serial`:
+   ```
+   Herramientas > Monitor Serial
+   ```
+   - Configura la velocidad a `115200 baudios`.
+
+Deberías ver en la consola mensajes como:
+
+```
+ SPIFFS montado correctamente
+ Servidor web iniciado
+ Wi-Fi AP ESP32-AP activo
+Dirección IP: 192.168.4.1
+```
+
+---
+
+### Posibles errores y cómo solucionarlos
+
+| Error en consola                       | Causa probable                                       | Solución sugerida                                         |
+|----------------------------------------|------------------------------------------------------|-----------------------------------------------------------|
+| `SPIFFS mount failed`                  | No se inicializó correctamente `SPIFFS.begin()`      | Verifica código y asegúrate de que `SPIFFS.begin(true)` esté presente |
+| `No such file or directory`            | Librería faltante                                    | Instala la librería desde el Gestor de Bibliotecas        |
+| `Failed to connect to ESP32`           | Puerto incorrecto o mal contacto                     | Revisa cable USB, reinicia ESP32, cambia puerto           |
+| `Guru Meditation Error` (core dump)    | Error crítico en tiempo de ejecución                 | Verifica punteros, delays, accesos inválidos              |
+
+---
+
+### Recomendaciones 
+
+- Usa nombres claros para funciones y variables, especialmente si vas a trabajar con múltiples servos.
+- Comenta tu código, especialmente en funciones como `submitForm()`, `addPoint()`, `startSequence()`, etc.
+- Si vas a trabajar con múltiples configuraciones, guarda perfiles diferentes en el IDE o usa PlatformIO.
+- Siempre revisa la salida del Monitor Serial tras cada carga. Es tu mejor herramienta de depuración.
+
 ---
  
 
