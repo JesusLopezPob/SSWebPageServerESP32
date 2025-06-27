@@ -65,7 +65,7 @@ const float PROTOCOL_VERSION_1 = 1.0;
 #define PRESENT_POSITION_ADDR_LEN  2
 
 // Configuración Servo 3
-uint16_t AX_CW_limit = 300;
+uint16_t AX_CW_limit = 200;
 uint16_t AX_CCW_limit = 500;
 //uint16_t AX_speed = 50;
 
@@ -124,15 +124,18 @@ struct ServoInfo {
   int model_number;
 };
 
+
+ServoInfo scanDXL[MAX_SERVOS];
+
 int baud[13] = {9600,19200, 57600, 115200, 200000,250000, 400000,500000, 1000000, 2000000, 3000000,4000000, 4500000};
 
-//int modeloOrden[MAX_SERVOS] = {320, 1030, 1060, 1080};
-int modeloOrden[MAX_SERVOS] = {0,0,0,0};
+int modeloOrden[MAX_SERVOS] = {320, 1030, 1060, 18};
+//int modeloOrden[MAX_SERVOS] = {0,0,0,0};
+
 // variables de secuencia
 
 int pointsCount[MAX_SERVOS] = {0, 0, 0, 0}; //array que dice la longuitud de la trayectoria de cada servo
 
-  ServoInfo scanDXL[4];
 
 //estructuras de datos
 
