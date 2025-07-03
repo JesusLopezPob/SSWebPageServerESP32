@@ -358,3 +358,19 @@ function actualizarEstadoServo(servo, chanceFlag) {
       //document.getElementById('latencia').innerText = `Error al medir latencia`;
     });
 }*/
+
+
+
+function irHome() {
+  window.location.href = "/"; // Cambia la ruta si deseas redirigir a otra página
+}
+
+
+function CambioSlider(valorSlider){
+  document.getElementById("txtBoxGrados").value = valorSlider;
+}
+
+function CambioInput(valorInput){
+  document.getElementById("slider-servo4").value = valorInput;
+}
+ 

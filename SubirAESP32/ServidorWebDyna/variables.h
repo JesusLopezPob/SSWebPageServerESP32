@@ -166,13 +166,17 @@ struct ServoConfig {
 
 
 // =========================
-//Sensores Finales de carrera
+//Sensores y Finales de carrera
 // =========================
 
+int Finalswitch[]={32,33,25,26,13,14,27}; //evitar usar el pin12, ya que puede generar problemas de arranque
 
+int ForceSensors[]={34,35}; //Usar solamente pines del ADC1, ya que ocupamos Wi-Fi(invalidando el ADC2)
+
+volatile bool limitTriggered[7] = {false, false, false, false, false, false, false};
 
 // =========================
-//pseudo maquina de estados para loop
+//Pseudo maquina de estados para loop
 // =========================
 bool ejecutandoSecuencia = false;
 int maxPoints =0;
@@ -198,6 +202,7 @@ String typeSimple="";
 float posSimple=0.0;
 int baudSimple=0;
 float protSimple=1.0;
+int indexSimple=0;
 
 float actualProt =1.0f;
 bool changeProt=false;

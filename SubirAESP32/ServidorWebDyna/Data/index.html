@@ -18,10 +18,16 @@
     
 
     <h1>Control de Servos</h1>
-    <div class="status-box">
+
+    <!--<div class="status-box">
       <h3>Estado de Ejecución: <span id="estado-ejecucion">Listo</span></h3>
       <p>Paso actual: <span id="paso-actual">0</span></p>
-    </div>
+    </div> -->
+
+    <div class="status-box">
+  <button type="button" class="button-paro" onclick="detenerProceso()"> PARO INMEDIATO</button>
+</div>
+
 
      <!--iconos en pestañas -->
      <div class="tab-container">
@@ -245,9 +251,14 @@
       <h3>Movimiento Inmediato</h3>
       <form id="servo4-form">
         <label>Posición (0-300° o 0-1023):</label><br>
-        <input type='number' name='value' min='0' max='1023' required><br>
+        <input id="txtBoxGrados" type='number' name='value' min='0' max='100' oninput="CambioInput(this.value)" required><br>
         <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
         <input type='radio' name='type' value='angle'> Ángulo<br>
+        
+        <div class="slider-container">
+          <input type="range" id="slider-servo4" min="300" max="500" value="0" oninput="CambioSlider(this.value)">
+        </div>
+       
         <button type="button" class="button" id="mov4" onclick="submitForm(4)">Mover</button>
       </form> 
       <h3>Configuración Trayectoria</h3>
@@ -257,6 +268,7 @@
         <input type='radio' name='Type' value='unit' checked> Unidad Interna<br>
         <input type='radio' name='Type' value='angle'> Ángulo<br>
         <button type="button" class="button" id="mov4" onclick="addPoint(4)">Punto Agregado</button>
+      
       </form>
       
               <div class="parameter-container">
@@ -269,7 +281,7 @@
 </div>
 
 
-  <div class="parameter-container">
+ <!-- <div class="parameter-container">
   <h3>Baud Rate</h3>
   <form>
     <label for="baud-servo4">Seleccione velocidad:</label><br>
@@ -286,7 +298,7 @@
     </select>
     <button type="button" class="button" onclick="guardarBaud(4)">Guardar Baud Rate</button>
   </form>
-</div>
+</div>  -->
       <div class='contador'>Puntos almacenados: 0/10</div>
     </div>
 
@@ -357,7 +369,8 @@
 
 <!-- boton ex-->
     <div style="margin:20px; padding:10px; border:1px solid #555;">
-      <button type="button" onclick="executeSequence()">Ejecutar Secuencia Alternada</button>
+      <button type="button" class="button" onclick="executeSequence()">Ejecutar Secuencia Alternada</button>
+      <button type="button" class="button" onclick="irHome()">Home</button>
     </div>
 
 

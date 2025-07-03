@@ -1,17 +1,17 @@
 :root{
-    --azulclaro:  #4ee4e9;
-    --azul: #00c3ff;
+    --azul: #00eeff;
     --grisclaro : #9b9fb5; 
     --grisobscuro: #383737;
-    --azulobscuro: #2865af;
-    --verdeclaro: #00ff00;  
-    --verdeobscuro: #0c7203;
+    --azulclaro:  #0c65a0; 
+    --azulobscuro: #041d33;
+    --verdeclaro: #17dd05;  
+    --verdeobscuro: #08632c;
     --negronotannegro: #060220;
-    --negronotannegro2:#0314fc;
-    --naranja: #ff8800;
-    --rojo:#ff0000;
+    --azullinea :#030a69;
     --blanco: #fff;
     --negro: #000;
+    --rojo: #ff0000;
+
     --fuentePrincipal: "Winky+Sans",cursive 
 }
 html {
@@ -36,11 +36,11 @@ html {
 body {
   font-family: var(--fuentePrincipal);
   font-size: 1.6rem;
-  background-image: url('fondo.png'); /* ← Cambia por la ruta de tu imagen */
+  background-image: url('Fondo.png'); /* ← Cambia por la ruta de tu imagen */
   background-size: cover;                /* Que cubra toda la pantalla */
   background-repeat: no-repeat;          /* Que no se repita */
   background-position: center center;    /* Que esté centrada */
-  color: var(--blanco);
+  color: var(--azul);
 }
 
 
@@ -49,7 +49,7 @@ body {
 
 h1,h2,h3{
     text-align:center;
-    color:var(--blanco);
+    color:var(--azul);
     font-family:var(--fuentePrincipal);
 
 }
@@ -61,33 +61,13 @@ h1,h2,h3{
     width: 6px;               /* Grosor de la línea */
     z-index: 9999;
 }
-
-.linea--izq1 {
-  left: 0;
-   
-  background: linear-gradient(to bottom, var(--azul), var(--negronotannegro2)); /* Azul a celeste */
-}
-
-.linea--izq2 {
-  left: 10px; /* separación entre líneas izquierdas */
-  background: linear-gradient(to bottom,  var(--negronotannegro2), var(--azul)); /* Celeste a azul */
-}
-
-.linea--der1 {
-  right: 0;
-  background: linear-gradient(to bottom, var(--azul), var(--negronotannegro2)); /* Rojo a amarillo */
-}
-.linea--der2 {
-  right: 10px; /* separación entre líneas derechas */
-  background: linear-gradient(to bottom,  var(--negronotannegro2), var(--azul)); /* Amarillo a rojo */
-}
- 
+  
  .tab-container {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    background-color: var(--rojo);
-    border-bottom: 4px solid var(--azulobscuro); /* línea inferior visible */
+    background-color: var(--azul);
+    border-bottom: 1px solid var(--azulobscuro); /* línea inferior visible */
     margin: 0;
     padding: 0;
   }
@@ -97,13 +77,11 @@ h1,h2,h3{
     text-align: center;
     padding: 1.2rem 0;
     cursor: pointer;
-    background-color: var(--azulclaro);
-    border-left: 2px solid var(--blanco);
-    border-right: 2px solid var(--blanco);
-    border-top: 4px solid var(--verdeobscuro);
+    background-color: var(--azulobscuro);
+    border: 1px solid var(--azul);
     border-bottom: none;
     font-weight: 600;
-    color: var(--negro);
+    color: var(--blanco);
     font-family: var(--fuentePrincipal);
     font-size: 1.8rem;
     transition: all 0.3s ease;
@@ -115,8 +93,8 @@ h1,h2,h3{
   }
   
   .tab.active {
-    background-color: var(--azulobscuro);
-    color: var(--blanco);
+    background-color: var(--azul);
+    color: var(--negro);
     border-top: 4px solid var(--verdeclaro); /* color distinto en activa */
     border-left: 2px solid var(--blanco);
     border-right: 2px solid var(--blanco);
@@ -259,7 +237,7 @@ body {
 
 .tabla-servos tr:hover {
   background-color: var(--azulclaro);
-  color: var(--negro);
+  color: var(--negronotannegro);
 }
 
 /*boton ex*/
@@ -316,3 +294,79 @@ body {
   vertical-align: middle;
   margin-left: 8px;
 }
+/*parte nueva mas el html de div class slider */
+ .slider-container {
+  width: 100%;
+  margin: 10px 0;
+}
+ .slider-container input[type="range"] {
+  width: 100%;
+  display: block; /* para que tome todo el ancho */
+}
+.tab-content, form, .parameter-container, .status-box {
+  border-radius: 10px;
+}
+
+/*Boton paro*/
+.button-paro {
+  background-color: var(--rojo);
+  border: 2px solid var(--negro);
+  color: var(--blanco);
+  font-size: 1.8rem;
+  font-weight: bold;
+  padding: 14px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button-paro:hover {
+  background-color: #cc0000;
+  transform: scale(1.05);
+}
+
+
+/* color del scroll */
+::-webkit-scrollbar {
+  width: 10px; 
+}
+
+::-webkit-scrollbar-track {
+  background: var(--azulobscuro);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--azul); /* color del scroll */
+  border-radius: 10px;
+  border: 2px solid var(--azulobscuro); 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--azulclaro); /* color cuando pasas el mouse */
+}
+ 
+/* === BORDES ESTILO NEÓN === */
+
+/* Formularios */
+form {
+  border: 2px solid var(--azul);
+  box-shadow: 0 0 8px var(--azul);
+}
+
+
+/* Pestañas activas */
+.tab.active {
+  box-shadow: 0 0 10px var(--verdeclaro);
+  border-top: 3px solid var(--verdeclaro);
+}
+
+/* Contenido de cada pestaña */
+.tab-content {
+  border: 2px solid var(--azul);
+  box-shadow: 0 0 8px var(--azul);
+  border-radius: 10px;
+}
+
+ 

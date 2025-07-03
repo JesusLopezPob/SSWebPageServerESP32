@@ -21,6 +21,13 @@
 
 Preferences prefs;
 
+void IRAM_ATTR isrLimitSwitch0() { limitTriggered[0] = true; }
+void IRAM_ATTR isrLimitSwitch1() { limitTriggered[1] = true; }
+void IRAM_ATTR isrLimitSwitch2() { limitTriggered[2] = true; }
+void IRAM_ATTR isrLimitSwitch3() { limitTriggered[3] = true; }
+void IRAM_ATTR isrLimitSwitch4() { limitTriggered[4] = true; }
+void IRAM_ATTR isrLimitSwitch5() { limitTriggered[5] = true; }
+void IRAM_ATTR isrLimitSwitch6() { limitTriggered[6] = true; }
 
 void setup() {
   // put your setup code here, to run once:
@@ -52,6 +59,22 @@ void setup() {
   //incializar el Server
   server_init();
 
+  //inicializamos los sensores 
+
+    for (int i = 0; i < 7; i++) {
+    pinMode(Finalswitch[i], INPUT_PULLUP); 
+
+  }
+
+    // Asignar interrupciones a los limites de carrera 
+  attachInterrupt(digitalPinToInterrupt(Finalswitch[0]), isrLimitSwitch0, FALLING);
+  attachInterrupt(digitalPinToInterrupt(Finalswitch[1]), isrLimitSwitch1, FALLING);
+  attachInterrupt(digitalPinToInterrupt(Finalswitch[2]), isrLimitSwitch2, FALLING);
+  attachInterrupt(digitalPinToInterrupt(Finalswitch[3]), isrLimitSwitch3, FALLING);
+  attachInterrupt(digitalPinToInterrupt(Finalswitch[4]), isrLimitSwitch4, FALLING);
+  attachInterrupt(digitalPinToInterrupt(Finalswitch[5]), isrLimitSwitch5, FALLING);
+  attachInterrupt(digitalPinToInterrupt(Finalswitch[6]), isrLimitSwitch6, FALLING);
+
 
  }
 
@@ -69,7 +92,7 @@ if (ejecutandoSecuencia) {
       // Saltar servos inactivos o sin puntos en este índice
       while (currentServo < MAX_SERVOS && 
              (!servoActivo[currentServo] || currentPoint >= servos[currentServo].contadorPuntos)) {
-        Serial.printf("Servo %d inactivo o sin punto, saltando...\n", currentServo);
+        Serial.printf("Servo %d inactivo o sin punto, saltando...\n", currentServo+1);
         currentServo++;
       }
 
@@ -104,7 +127,7 @@ if (ejecutandoSecuencia) {
         
 
         Serial.print("moviendo servo ");
-        Serial.print(currentServo);
+        Serial.print(currentServo+1);
         Serial.print(" a ");
         Serial.print(val);
         Serial.print(" ");
@@ -138,9 +161,9 @@ if (ejecutandoSecuencia) {
         int currentPos = dxl.getPresentPosition(id, UNIT_DEGREE);
         int targetPos = servos[currentServo].puntos[currentPoint].valorPosicion;
   
-        if (abs(currentPos - targetPos) <= angleTolerance) {
+        if (abs(currentPos - targetPos) <= angleTolerance ) {
           Serial.print("Servo ");
-          Serial.print(currentServo);
+          Serial.print(currentServo+1);
           Serial.print(" llegó al punto ");
           Serial.println(currentPoint);
   
@@ -148,15 +171,29 @@ if (ejecutandoSecuencia) {
           currentServo++;
           puntoEnEjecucion = false;
         }
+        
+        if (limitSwitchActivado(currentServo)) {
+        
+          dxl.setGoalPosition(id, currentPos ); 
+          dxl.writeControlTableItem(PROFILE_VELOCITY, id, 0);
+          limitSwitchClear( currentServo);
+          Serial.print("Servo ");
+          Serial.print(currentServo+1);
+          Serial.println(" Interrupido ");
+          dxl.writeControlTableItem(PROFILE_VELOCITY,id,servos[currentServo].V);
+           
+          currentServo++;
+          puntoEnEjecucion = false;
+      }
         
       }else {
         
         int currentPos = dxl.getPresentPosition(id);
         int targetPos = servos[currentServo].puntos[currentPoint].valorPosicion;
   
-        if (abs(currentPos - targetPos) <= tolerance) {
+        if (abs(currentPos - targetPos) <= tolerance ) {
           Serial.print("Servo ");
-          Serial.print(currentServo);
+          Serial.print(currentServo+1);
           Serial.print(" llegó al punto ");
           Serial.println(currentPoint);
   
@@ -164,6 +201,20 @@ if (ejecutandoSecuencia) {
           currentServo++;
           puntoEnEjecucion = false;
         }
+
+        if (limitSwitchActivado(currentServo)) {
+        
+          dxl.setGoalPosition(id, currentPos ); 
+          dxl.writeControlTableItem(PROFILE_VELOCITY, id, 0);
+          limitSwitchClear( currentServo);
+          Serial.print("Servo ");
+          Serial.print(currentServo+1);
+          Serial.println(" Interrupido ");
+          dxl.writeControlTableItem(PROFILE_VELOCITY,id,servos[currentServo].V);
+        
+          currentServo++;
+          puntoEnEjecucion = false;
+      }
 
       }
 
@@ -197,6 +248,7 @@ if (ejecutandoSecuencia) {
     }
   }
 
+
 //iniciar movimiento individual
 if (moveSimple) {
   
@@ -209,26 +261,52 @@ if (moveSimple) {
       int targetPos = posSimple;
       //Serial.printf("Posicion objetivo →  %d,Posicion actual →  %d \n",targetPos, currentPos);
   
-      if (abs(currentPos - targetPos) <= angleTolerance) {
+      if (abs(currentPos - targetPos) <= angleTolerance ) {
         Serial.print("Servo ");
-        Serial.print(currentServo);
+        Serial.print(indexSimple+1);
         Serial.println(" termino de moverse ");
         moveSimple=false;
         
-      }    
+      }
+      if (limitSwitchActivado(indexSimple)) {
+        
+        dxl.setGoalPosition(id, indexSimple ); 
+        dxl.writeControlTableItem(PROFILE_VELOCITY, id, 0);
+        limitSwitchClear( currentServo);
+        Serial.print("Servo ");
+        Serial.print(indexSimple+1);
+        Serial.println(" Interrupido ");
+        dxl.writeControlTableItem(PROFILE_VELOCITY,id,servos[indexSimple].V);
+        moveSimple=false;
+      }
+      
     }else {
 
       int currentPos = dxl.getPresentPosition(id);
       int targetPos = posSimple;
       //Serial.printf("Posicion objetivo →  %d,Posicion actual →  %d \n",targetPos, currentPos);
   
-      if (abs(currentPos - targetPos) <= tolerance) {
+      if (abs(currentPos - targetPos) <= tolerance ) {
         Serial.print("Servo ");
-        //Serial.print(currentServo);
+        Serial.print(indexSimple+1);
         Serial.println(" termino de moverse ");
         moveSimple=false;
         
       }
+        if ( limitSwitchActivado(indexSimple)) {
+        dxl.setGoalPosition(id, currentPos ); 
+        dxl.writeControlTableItem(PROFILE_VELOCITY, id, 0);
+        limitSwitchClear( indexSimple);
+        Serial.print("Servo ");
+        Serial.print(indexSimple+1);
+        Serial.println(" Interrupido ");
+        dxl.writeControlTableItem(PROFILE_VELOCITY,id,servos[indexSimple].V);
+        
+        moveSimple=false;
+
+        
+      }
+      
     }
     
 

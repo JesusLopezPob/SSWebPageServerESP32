@@ -5,7 +5,6 @@
 
 ---
 **Índice rápido**  
-- [🚀 Instalación](#🚀-instalación)  
 - [📋 Procedimiento inicialización](#📋-procedimiento-inicialización)  
   - [1. Alimentación del circuito](#1-alimentación-del-circuito-y-shield-dxl)  
   - [2. Conexión de servomotores](#2-conexión-de-servomotores-dynamixel)  
@@ -13,14 +12,6 @@
   - [4. 🌐 Acceso a la interfaz web](#4-acceso-a-la-interfaz-web-del-ESP32)  
 ---
 
-## 🚀 Instalación  
-```bash
-# Comandos para instalar (ejemplo)
-git clone https://github.com/tu-usuario/tu-repo.git
-cd tu-repo
-npm install  # o pip install, etc.
-
-```
 ## 📋 Procedimiento inicialización
 
 ### 1. **Alimentación del circuito y shield DXL**
@@ -871,7 +862,7 @@ El uso de una FSM mejora la **robustez, mantenibilidad y control de flujo**, esp
 | **Servidor Web (ESP32)**         | Microcontrolador con Wi-Fi que aloja la interfaz gráfica en SPIFFS y gestiona comandos. |
 | **Microcontrolador ESP32 - SPIFFS** | Parte embebida del ESP32 que contiene el sistema de archivos y ejecuta el firmware de control. |
 | **DYNAMIXEL Shield MKR**         | Módulo intermediario que permite la comunicación UART half-duplex con los servos Dynamixel. |
-| **Servomotores (MX106, XM430, AX-18A)** | Motores inteligentes conectados en cadena, cada uno con una función específica en el brazo robótico. |
+| **Servomotores (MX106, XM430, AX-18A)** | Servomotores inteligentes conectados en cadena, cada uno con una función específica en el brazo robótico. |
 | **Brazo robótico (4 GDL)**       | Mecanismo físico que recibe los movimientos solicitados y los ejecuta de forma coordinada. |
 
 ---
@@ -985,7 +976,7 @@ Este diagrama ilustra la lógica interna del servidor embebido en el ESP32, el c
 
    ##### `/servoParam`
    - Identifica el servo.
-   - Sobrescribe los parámetros PID enviados.
+   - Sobrescribe los parámetros de ID y baudrate enviados.
    - Actualiza la estructura de **parámetros** global.
 
    ##### `/scan`
@@ -994,10 +985,10 @@ Este diagrama ilustra la lógica interna del servidor embebido en el ESP32, el c
 
    ##### `/moveParam`
    - Identifica el servo.
-   - Sobrescribe velocidad y aceleración.
+   - Sobrescribe valores PID, velocidad y aceleración.
 
 3. **Gestión de estructuras**
-   - Los puntos de trayectoria se almacenan en un contenedor local (puede ser un array o estructura).
+   - Los puntos de trayectoria se almacenan en un contenedor local (estructuras de datos).
    - Los parámetros de cada servo se guardan para uso posterior y visualización en la interfaz.
 
 4. **Respuesta**

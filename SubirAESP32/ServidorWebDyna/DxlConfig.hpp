@@ -412,9 +412,11 @@ void moveDxl(int index, String type, int valuePos, bool simple) {
       //dxl.setPortProtocolVersion(1.0f);
       dxl.ping(servos[index].id);
       // Configuración adicional si se encuentra un Dynamixel
+      /*
       dxl.torqueOff(servos[index].id);
       dxl.setOperatingMode(servos[index].id, OP_POSITION);
       dxl.torqueOn(servos[index].id);
+      */
       
       if (type == "unit") {
         dxl.setGoalPosition(id, valuePos); // Posición en formato raw
@@ -423,7 +425,6 @@ void moveDxl(int index, String type, int valuePos, bool simple) {
       } else if (type == "angle") {
         dxl.setGoalPosition(id, valuePos, UNIT_DEGREE); // Posición en grados
       }
-    //servoEnMovimiento= true;  // Cambiar global a arreglo por servo
     /*
     idServoMovimiento = servos[index].id;
     posObjetivo = valuePos;
@@ -434,10 +435,11 @@ void moveDxl(int index, String type, int valuePos, bool simple) {
      // dxl.setPortProtocolVersion(2.0f);
       dxl.ping(servos[index].id);
       // Configuración adicional si se encuentra un Dynamixel
+      /*
       dxl.torqueOff(servos[index].id);
       dxl.setOperatingMode(servos[index].id, OP_POSITION);
       dxl.torqueOn(servos[index].id);
-      
+      */
       if (type == "unit") {
         dxl.setGoalPosition(id, valuePos); // Posición en formato raw
       } else if (type == "angle") {
@@ -447,7 +449,7 @@ void moveDxl(int index, String type, int valuePos, bool simple) {
 
   //si es el AX18
     if (index == 3) {  
-    
+    /*
       //dxl.setPortProtocolVersion(1.0f);
     //==============================configuro para iniciar al AX18 ====================================// 
 
@@ -489,7 +491,7 @@ void moveDxl(int index, String type, int valuePos, bool simple) {
           return;
         }
     //==============================fin de configuracion del AX18 ====================================// 
-        
+       */ 
         if (type == "unit") {     
           //dxl.write(servos[index].id, AX_GOAL_POSITION_ADDR, (uint8_t*)valuePos, AX_GOAL_POSITION_ADDR_LEN, TIMEOUT); // Posición en formato raw
           dxl.setGoalPosition(servos[index].id, valuePos);
@@ -497,6 +499,11 @@ void moveDxl(int index, String type, int valuePos, bool simple) {
         int raw_position = (int)(valuePos * 1023.0 / 300.0);
         dxl.setGoalPosition(id, raw_position ); // Posición en grados convertidos
       }
+      /*else if (type== "slicer"){
+        int raw_position =(int)map(valuePos, 0,100,AX_CW_limit,AX_CCW_limit);
+        dxl.setGoalPosition(id, raw_position ); // valor de slicer a raw 
+      }
+      */
 
       
     }
@@ -504,6 +511,7 @@ void moveDxl(int index, String type, int valuePos, bool simple) {
 
     if (simple){
       moveSimple=true;
+      indexSimple=index;
       IDSimple=id;
       typeSimple=type;
       baudSimple=servos[index].baudrate;
@@ -723,5 +731,38 @@ void chanceServoParamet(int index, int newBaud, int newID) {
 
   } else {
     Serial.println("❌ Servo no encontrado.");
+  }
+}
+
+bool limitSwitchActivado(int servoIndex) {
+  switch (servoIndex) {
+    case 0: return limitTriggered[0] || limitTriggered[1];
+    case 1: return limitTriggered[2];
+    case 2: return limitTriggered[3] || limitTriggered[4];
+    case 3: return limitTriggered[5] || limitTriggered[6];
+    default: return false;
+  }
+}
+
+void limitSwitchClear(int servoIndex){
+  switch (servoIndex) {
+    case 0:
+      limitTriggered[0] = false;
+      limitTriggered[1] = false;
+      break;
+    case 1:
+      limitTriggered[2] = false;
+      break;
+    case 2:
+      limitTriggered[3] = false;
+      limitTriggered[4] = false;
+      break;
+    case 3:
+      limitTriggered[5] = false;
+      limitTriggered[6] = false;
+      break;
+    default:
+      // No hacer nada si el índice es inválido
+      break;
   }
 }
