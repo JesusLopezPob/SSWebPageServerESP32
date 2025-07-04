@@ -179,6 +179,28 @@ server.on("/Scan", HTTP_GET, [](AsyncWebServerRequest *request){
 
 });
 
+server.on("/EmergencyStop", HTTP_GET, [](AsyncWebServerRequest *request){
+
+    Serial.printf(" Boton Paro presionado...\n");
+    
+     emergencyStop = !emergencyStop; // invierte su valor
+
+    request->send(200, "text/plain", "OK");  // Enviar respuesta
+    
+
+
+});
+
+server.on("/Home", HTTP_GET, [](AsyncWebServerRequest *request){
+
+    Serial.printf(" Boton Home presionado...\n");
+    HomeState=true;
+     
+    request->send(200, "text/plain", "OK");  // Enviar respuesta
+    
+
+
+});
 
 server.on("/pingtest", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/plain", "pong");

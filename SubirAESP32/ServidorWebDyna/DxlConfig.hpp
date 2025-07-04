@@ -524,6 +524,8 @@ void moveDxl(int index, String type, int valuePos, bool simple) {
 
 }
 
+
+
 //funcion para guardar el punto para una trayectoria
 
 void addPoint(int index, String type, int valuePos) {
@@ -556,6 +558,8 @@ void executeSequence(){
 
 }
 
+
+//funcion para modificar el PID, velocidad o aceleracion
 void changeMoveParamet(int index,float Pvalue,float Ivalue,float Dvalue,int Vvalue,int Avalue){
   
   int prot = servos[index].protocolo;  // Asumiendo que servos[] está definido globalmente
@@ -658,6 +662,7 @@ uint8_t getBaudValue(int index, int desiredBaud) {
 }
 
 
+//funcion para modificar el ID o Baudrate
 void chanceServoParamet(int index, int newBaud, int newID) {
   // Cargar baudrate real desde NVS
   int baudFromNVS = prefs.getUInt(("baud" + String(index)).c_str(), 1000000);
@@ -734,6 +739,7 @@ void chanceServoParamet(int index, int newBaud, int newID) {
   }
 }
 
+//checa cual limit switch se activo
 bool limitSwitchActivado(int servoIndex) {
   switch (servoIndex) {
     case 0: return limitTriggered[0] || limitTriggered[1];
@@ -744,6 +750,7 @@ bool limitSwitchActivado(int servoIndex) {
   }
 }
 
+//Limpia las banderas de los limitSwitch
 void limitSwitchClear(int servoIndex){
   switch (servoIndex) {
     case 0:
@@ -765,4 +772,90 @@ void limitSwitchClear(int servoIndex){
       // No hacer nada si el índice es inválido
       break;
   }
+}
+
+//funcion para obtener limite superior para home
+int obtenerLimiteMaximo(int index) {
+  switch (index) {
+    case 0:
+    case 1: 
+    case 2: 
+      return 4095;
+    case 3:
+      return 1023;
+    default:
+      return 4095; // Valor seguro por defecto
+  }
+}
+
+//funcion de home
+void HomeLimits(int indexServo, int* limites) { 
+  int LimitInf = -1;
+  int LimitSup = -1;
+  
+  int id = servos[indexServo].id;
+  int currentPos = dxl.getPresentPosition(id);
+
+  Serial.println("Buscando límite inferior...");
+  for (int pos = currentPos; pos >= 0; pos -= 1) {
+    dxl.setGoalPosition(id, pos);
+    delay(1);
+
+    if (limitSwitchActivado(indexServo)) {
+      LimitInf = dxl.getPresentPosition(id);
+      dxl.setGoalPosition(id, LimitInf);
+      dxl.writeControlTableItem(PROFILE_VELOCITY, id, 0);
+      limitSwitchClear(indexServo);
+      Serial.print("Servo ");
+      Serial.print(indexServo + 1);
+      Serial.println(" Limite inferior (por sensor): ");
+      Serial.println(LimitInf);
+      dxl.writeControlTableItem(PROFILE_VELOCITY, id, servos[indexServo].V);
+      break;
+    }
+
+    if (pos == 0) {
+      LimitInf = 0;
+      Serial.print("Servo ");
+      Serial.print(indexServo + 1);
+      Serial.println(" Limite inferior (por encoder): ");
+      Serial.println(LimitInf);
+      break;
+    }
+  }
+
+  Serial.println("Buscando límite superior...");
+  int currentPos2 = dxl.getPresentPosition(id);
+  int SupLimitServo = obtenerLimiteMaximo(indexServo);  // CORREGIDO: faltaba ;
+
+  for (int pos2 = currentPos2; pos2 <= SupLimitServo; pos2 += 1) {
+    dxl.setGoalPosition(id, pos2);
+    delay(1);
+
+    if (limitSwitchActivado(indexServo)) {
+      LimitSup = dxl.getPresentPosition(id);
+      dxl.setGoalPosition(id, LimitSup);
+      dxl.writeControlTableItem(PROFILE_VELOCITY, id, 0);
+      limitSwitchClear(indexServo);
+      Serial.print("Servo ");
+      Serial.print(indexServo + 1);
+      Serial.println(" Limite superior (por sensor): ");
+      Serial.println(LimitSup);
+      dxl.writeControlTableItem(PROFILE_VELOCITY, id, servos[indexServo].V);
+      break;
+    }
+
+    if (pos2 == SupLimitServo) {
+      LimitSup = SupLimitServo;
+      Serial.print("Servo ");
+      Serial.print(indexServo + 1);
+      Serial.println(" Limite superior (por encoder): ");
+      Serial.println(LimitSup);
+      break;
+    }
+  }
+
+  // Devolver resultados
+  limites[0] = LimitInf;
+  limites[1] = LimitSup;
 }

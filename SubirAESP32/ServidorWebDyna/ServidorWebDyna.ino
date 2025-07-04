@@ -84,8 +84,9 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
-if (ejecutandoSecuencia) {
+  while (emergencyStop!=true){
+    paroEjecutado=false;
+    if (ejecutandoSecuencia) {
 
   //iniciar secuencia
     if (!puntoEnEjecucion) {
@@ -357,6 +358,51 @@ if (scanMode){
     
 }
 
+
+//iniciar sencuencia de home y checar los limites superior e inferior
+if (HomeState){
+  for (int i = 0; i < MAX_SERVOS; i++) {
+    if (servoActivo[i]) {
+
+    float prot=servos[i].protocolo;
+    int baud=servos[i].baudrate;
+    DXL_SERIAL.begin(baud, SERIAL_8N1, RX_PIN, TX_PIN);
+    dxl.begin(baud);
+    dxl.setPortProtocolVersion(prot);
+      int limites[2]; // Aquí se guardarán los límites
+      
+      HomeLimits(i, limites);// Llamar a la función pasando el índice del servo y el array de límites
+      //aqui iria la parte de poner los limites inferiores y superiores del dynamixel
+      
+    }
+  }
+  HomeState=false;
+  Serial.println("Secuencia Home terminada ");
+}
+  
+  
+  }
+  
+if (emergencyStop && !paroEjecutado) {
+  Serial.println("¡Paro de emergencia activado! Deteniendo todo...");
+  
+  for (int i = 0; i < MAX_SERVOS; i++) {
+    if (servoActivo[i]) {
+      int id = servos[i].id;
+      int currentPos = dxl.getPresentPosition(id);
+      dxl.setGoalPosition(id, currentPos);
+      dxl.writeControlTableItem(PROFILE_VELOCITY, id, 0);
+    }
+  }
+
+  ejecutandoSecuencia = false;
+  moveSimple = false;
+  scanMode = false;
+  currentPoint = 0;
+  currentServo = 0;
+
+  paroEjecutado = true; // Evita que este bloque se repita
+}
 
 /*
 //medicion de latencia

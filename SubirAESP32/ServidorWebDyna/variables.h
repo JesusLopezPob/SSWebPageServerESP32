@@ -183,7 +183,7 @@ int maxPoints =0;
 int currentPos=0;
 
 
-
+//estado movimiento en secuencia
 int idServoMovimiento ;
 int posObjetivo;
 int tolerance=20;
@@ -196,6 +196,7 @@ bool puntoEnEjecucion = false; // Controla si ya se envió el comando de movimie
 
 bool servoActivo[MAX_SERVOS] = {true, true, true, true};  // modifiquen para pruebas
 
+//estado movimiento simple
 bool moveSimple=false;
 int IDSimple=0;
 String typeSimple="";
@@ -207,9 +208,18 @@ int indexSimple=0;
 float actualProt =1.0f;
 bool changeProt=false;
 
+//estado escaneo
 bool found=false;
 
 bool scanMode=false;
 
 
 bool check=true;
+
+//para paro de emergencia
+bool emergencyStop=false;
+bool paroEjecutado=false;
+
+
+//estado home
+bool HomeState=false;

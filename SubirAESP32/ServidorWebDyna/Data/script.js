@@ -362,7 +362,13 @@ function actualizarEstadoServo(servo, chanceFlag) {
 
 
 function irHome() {
-  window.location.href = "/"; // Cambia la ruta si deseas redirigir a otra página
+  //window.location.href = "/"; // Cambia la ruta si deseas redirigir a otra página
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/Home?`, true);
+    xhr.send();
+
+    alert('Boton Home presionado ...');
+    console.log(`Iniciando secuencia de home ...)`);
 }
 
 
@@ -373,4 +379,12 @@ function CambioSlider(valorSlider){
 function CambioInput(valorInput){
   document.getElementById("slider-servo4").value = valorInput;
 }
- 
+
+function detenerProceso(){
+      const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/EmergencyStop?`, true);
+    xhr.send();
+
+    alert('Boton presionado ...');
+    console.log(`Paro de emergencia ...)`);
+}

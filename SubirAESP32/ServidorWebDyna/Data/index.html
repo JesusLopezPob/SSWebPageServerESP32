@@ -250,10 +250,10 @@
       <h2>Servo 4</h2>
       <h3>Movimiento Inmediato</h3>
       <form id="servo4-form">
-        <label>Posición (0-300° o 0-1023):</label><br>
-        <input id="txtBoxGrados" type='number' name='value' min='0' max='100' oninput="CambioInput(this.value)" required><br>
+        <label>Posición (300-500):</label><br>
+        <input id="txtBoxGrados" type='number' name='value' min='300' max='500' oninput="CambioInput(this.value)" required><br>
         <input type='radio' name='type' value='unit' checked> Unidad Interna<br>
-        <input type='radio' name='type' value='angle'> Ángulo<br>
+        <!--<input type='radio' name='type' value='angle'> Ángulo<br>  -->
         
         <div class="slider-container">
           <input type="range" id="slider-servo4" min="300" max="500" value="0" oninput="CambioSlider(this.value)">
