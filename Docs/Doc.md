@@ -18,19 +18,19 @@
 ---
    - **Conexión de 5V**:  
      Conecta el voltaje de **5V** a la **terminal de bornera del circuito principal** (ver imagen de referencia). 
-      s
-     ![Ejemplo conexión 5V](/Docs/images/prueba1.png)  
+      
+     ![Ejemplo conexión 5V](/Docs/images/prueba1.jpg)  
 
    - **Conexión de 12V**:  
      Los **12V** deben conectarse a la **bornera del shield DXL** (asegúrate de verificar la polaridad).  
 
-     ![Ejemplo conexión 12V](/Docs/images/prueba2.png)
+     ![Ejemplo conexión 12V](/Docs/images/prueba2.jpg)
 
 
   - **Conexión USB(Recomendable)**:  
    Conecta el **cable USB** a la ESP32 para permitir una comunicación serial y facilitar un debugging efectivo. 
 
-   ![Ejemplo conexión USB](/Docs/images/prueba2A.png)    
+   ![Ejemplo conexión USB](/Docs/images/prueba2A.jpg)    
 
 
 
@@ -1005,7 +1005,7 @@ Este diagrama ilustra la lógica interna del servidor embebido en el ESP32, el c
 
 ---
 
-![Arquitectura modular del firmware](/Docs/images/ArchFirm.png) 
+![Arquitectura modular del firmware](/Docs/images/ArchFirm.jpg) 
 ### Figura 8 – Arquitectura modular del firmware
 
 La Figura 8 representa la estructura modular del firmware que corre sobre el ESP32, evidenciando la separación lógica de responsabilidades a través de archivos `.hpp` (cabeceras) bien definidos. Esta arquitectura facilita el mantenimiento, la escalabilidad y la depuración del sistema embebido, dividiendo claramente el manejo de red, interfaz web, comunicación con los servomotores y gestión de parámetros.

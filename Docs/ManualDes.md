@@ -439,3 +439,25 @@ Configuracion completa.
 
 ---
  
+###  4. Nomenclaturas de los commits
+
+Para mantener un historial claro, ordenado y comprensible en el repositorio, se debe seguir una convención estandarizada al redactar los mensajes de commit. A continuación se detallan las abreviaturas permitidas, su significado y ejemplos de uso:
+
+| Abreviatura | Significado             | Uso típico                                                                 | Ejemplo                                       |
+|-------------|-------------------------|---------------------------------------------------------------------------|-----------------------------------------------|
+| `feat`      | Feature (función nueva) | Añadir una nueva funcionalidad o característica                           | `feat: agregar función de escaneo`            |
+| `fix`       | Fix (arreglo)           | Corregir errores o bugs                                                   | `fix: corregir cálculo de PID`                |
+| `refactor`  | Refactorización         | Cambios internos sin alterar el comportamiento del sistema                | `refactor: optimizar función de movimiento`   |
+| `docs`      | Documentación           | Cambios en la documentación                                               | `docs: agregar sección de configuración`      |
+| `test`      | Tests                   | Añadir o modificar pruebas                                                | `test: añadir pruebas para control de servos` |
+| `chore`     | Tareas generales        | Actualizaciones no relacionadas al código fuente (e.g. dependencias, config) | `chore: actualizar dependencias`          |
+| `perf`      | Performance             | Mejoras en el rendimiento del sistema                                     | `perf: optimizar lectura de sensores`         |
+| `style`     | Estilo                  | Cambios de formato, espacios o indentación (sin modificar lógica de código) | `style: corregir indentación`             |
+
+### Recomendaciones
+
+- Usar verbos en infinitivo y minúsculas en la descripción (`agregar`, `corregir`, `añadir`, etc.).
+- Evitar descripciones vagas como "arreglos varios" o "cambios menores".
+- Ser conciso pero específico sobre el cambio realizado.
+- Si es necesario, se puede ampliar la descripción del commit en el cuerpo del mensaje.
+- Preferentemente en ingles 
